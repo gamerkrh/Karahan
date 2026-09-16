@@ -940,6 +940,7 @@
     <button id="importBtn" data-i18n="import_btn">📂 Yedek yükle</button> &nbsp;•&nbsp;
     <button id="resetBtn" data-i18n="reset_btn">Tüm verileri sıfırla</button>
     <input type="file" id="importFile" accept=".json" style="display:none">
+    <div id="verInfo" style="margin-top:8px;font-size:11px;color:var(--muted)"></div>
   </footer>
 
 </div>
@@ -958,7 +959,8 @@ const LIC_PUB = {"kty":"EC","crv":"P-256","x":"1a40a8Aa9bvyUnykLjB64EGubcyRzs8vT
 // Her yeni sürümde APP_VERSION'ı 1 arttır. Buluttaki surum.json'da da aynı sayıyı yükselt.
 const APP_VERSION = 1;
 // Buraya kendi GitHub "raw" adresini yaz (surum.json'un bulunduğu link). Boşsa güncelleme kontrolü kapalı.
-const UPDATE_URL = 'https://raw.githubusercontent.com/gamerkrh/Karahan/main/surum.json';
+// surum.js adresi — jsDelivr aynası (doğru MIME + file:// uyumlu). Boşsa güncelleme kapalı.
+const UPDATE_URL = 'https://cdn.jsdelivr.net/gh/gamerkrh/Karahan@main/surum.js';
 
 // state: { currency, items(ortak katalog), activeChar, chars:{ id:{ name, records, cp, goals, goal, farm, vault } } }
 let state = { items: [], currency: 'Gold', activeChar: '', chars: {} };
@@ -2383,45 +2385,31 @@ helpModal.onclick = e => { if (e.target === helpModal) helpModal.style.display =
 // Hoş geldin bandı — kapatılınca bir daha gösterme
 const welcome = document.getElementById('welcome');
 if (!localStorage.getItem('welcomeKapandi')) welcome.style.display = 'block';
-// --- Güncelleme kontrolü ---
-async function checkUpdate() {
-  if (!UPDATE_URL) return; // adres girilmemişse kapalı
-  try {
-    const res = await fetch(UPDATE_URL + '?t=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) return;
-    const info = await res.json();
-    if (!info || typeof info.surum !== 'number') return;
-    if (info.surum > APP_VERSION) {
-      const bar = document.getElementById('updateBar');
-      const not = info.not ? ' — ' + info.not : '';
-      document.getElementById('updateMsg').textContent = (LANG === 'en'
-        ? '🔔 New version available (v' + info.surum + ')' + not
-        : '🔔 Yeni sürüm var (v' + info.surum + ')' + not);
-      const link = document.getElementById('updateLink');
-      const dlUrl = info.url || UPDATE_URL;
-      link.href = dlUrl;
-      link.textContent = LANG === 'en' ? '⬇ Download' : '⬇ İndir';
-      link.onclick = async (e) => {
-        e.preventDefault();
-        try {
-          const r = await fetch(dlUrl + '?t=' + Date.now(), { cache: 'no-store' });
-          const txt = await r.text();
-          const blob = new Blob([txt], { type: 'text/html' });
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = 'kazanc-takip.html';
-          a.click();
-          URL.revokeObjectURL(a.href);
-          alert(LANG === 'en'
-            ? 'New version downloaded. Save it OVER the old kazanc-takip.html (same folder) — your data stays.'
-            : 'Yeni sürüm indirildi. Eski kazanc-takip.html\'in ÜSTÜNE kaydet (aynı klasör) — verilerin korunur.');
-        } catch (err) {
-          window.open(dlUrl, '_blank'); // indirilemezse linki aç
-        }
-      };
-      bar.style.display = 'flex';
-    }
-  } catch (e) { /* çevrimdışı ya da erişilemedi — sessizce geç */ }
+// --- Güncelleme kontrolü (script yükleme — file://'den de çalışır) ---
+function showUpdate(info) {
+  if (!info || typeof info.surum !== 'number' || info.surum <= APP_VERSION) return;
+  const bar = document.getElementById('updateBar');
+  const not = info.not ? ' — ' + info.not : '';
+  document.getElementById('updateMsg').textContent = (LANG === 'en'
+    ? '🔔 New version available (v' + info.surum + ')' + not
+    : '🔔 Yeni sürüm var (v' + info.surum + ')' + not);
+  const link = document.getElementById('updateLink');
+  link.href = info.url || '#';
+  link.textContent = LANG === 'en' ? '⬇ Download' : '⬇ İndir';
+  link.onclick = () => {
+    setTimeout(() => alert(LANG === 'en'
+      ? 'On the opened page, click the download (⬇) button, then save it OVER your old kazanc-takip.html (same folder) — your data stays.'
+      : 'Açılan sayfada indirme (⬇) düğmesine bas, sonra eski kazanc-takip.html\'in ÜSTÜNE kaydet (aynı klasör) — verilerin korunur.'), 300);
+  };
+  bar.style.display = 'flex';
+}
+window.KRH_SURUM = showUpdate; // surum.js bunu çağırır
+function checkUpdate() {
+  if (!UPDATE_URL) return;
+  const sc = document.createElement('script');
+  sc.src = UPDATE_URL + '?t=' + Date.now();
+  sc.onerror = () => {}; // çevrimdışı — sessizce geç
+  document.head.appendChild(sc);
 }
 document.getElementById('updateClose').onclick = () => { document.getElementById('updateBar').style.display = 'none'; };
 
@@ -2621,6 +2609,8 @@ function startApp(info) {
   lockScreen.style.display = 'none';
   document.querySelector('.container').style.display = '';
   applyLang();
+  const vi = document.getElementById('verInfo');
+  if (vi) vi.textContent = 'Sürüm ' + APP_VERSION;
   checkUpdate();
   // kalan süreyi başlıkta göster
   if (info && info.exp) {
