@@ -958,7 +958,7 @@ const LIC_PUB = {"kty":"EC","crv":"P-256","x":"1a40a8Aa9bvyUnykLjB64EGubcyRzs8vT
 // Her yeni sürümde APP_VERSION'ı 1 arttır. Buluttaki surum.json'da da aynı sayıyı yükselt.
 const APP_VERSION = 1;
 // Buraya kendi GitHub "raw" adresini yaz (surum.json'un bulunduğu link). Boşsa güncelleme kontrolü kapalı.
-const UPDATE_URL = ''; // örn: 'https://raw.githubusercontent.com/KULLANICI/REPO/main/surum.json'
+const UPDATE_URL = 'https://raw.githubusercontent.com/gamerkrh/Karahan/main/surum.json';
 
 // state: { currency, items(ortak katalog), activeChar, chars:{ id:{ name, records, cp, goals, goal, farm, vault } } }
 let state = { items: [], currency: 'Gold', activeChar: '', chars: {} };
@@ -2398,8 +2398,27 @@ async function checkUpdate() {
         ? '🔔 New version available (v' + info.surum + ')' + not
         : '🔔 Yeni sürüm var (v' + info.surum + ')' + not);
       const link = document.getElementById('updateLink');
-      link.href = info.url || UPDATE_URL;
+      const dlUrl = info.url || UPDATE_URL;
+      link.href = dlUrl;
       link.textContent = LANG === 'en' ? '⬇ Download' : '⬇ İndir';
+      link.onclick = async (e) => {
+        e.preventDefault();
+        try {
+          const r = await fetch(dlUrl + '?t=' + Date.now(), { cache: 'no-store' });
+          const txt = await r.text();
+          const blob = new Blob([txt], { type: 'text/html' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'kazanc-takip.html';
+          a.click();
+          URL.revokeObjectURL(a.href);
+          alert(LANG === 'en'
+            ? 'New version downloaded. Save it OVER the old kazanc-takip.html (same folder) — your data stays.'
+            : 'Yeni sürüm indirildi. Eski kazanc-takip.html\'in ÜSTÜNE kaydet (aynı klasör) — verilerin korunur.');
+        } catch (err) {
+          window.open(dlUrl, '_blank'); // indirilemezse linki aç
+        }
+      };
       bar.style.display = 'flex';
     }
   } catch (e) { /* çevrimdışı ya da erişilemedi — sessizce geç */ }
