@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kazanç Takip</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1218;
+    --panel: #171c26;
+    --panel2: #1e2532;
+    --border: #2a3344;
+    --text: #e8ecf3;
+    --muted: #8b96a8;
+    --accent: #f5b942;
+    --green: #4ade80;
+    --red: #f87171;
+    --blue: #60a5fa;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  h1 { font-size: 22px; color: var(--accent); }
+  h1 span { font-size: 14px; color: var(--muted); font-weight: normal; margin-left: 8px; }
+
+  .currency-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .currency-box input {
+    width: 80px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+
+  .char-box { display: flex; align-items: center; gap: 5px; }
+  .char-box select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    max-width: 160px;
+  }
+  .char-box button {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+  }
+  .char-box button:hover { border-color: var(--accent); color: var(--accent); }
+  .char-box #charAdd:hover { border-color: var(--green); color: var(--green); }
+  .char-box #charDel:hover { border-color: var(--red); color: var(--red); }
+
+  /* Özet kartları */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 22px; font-weight: 700; color: var(--green); }
+  .stat.today .value { color: var(--accent); }
+  .stat.avg .value { color: var(--blue); }
+  .stat .sub { font-size: 13px; color: var(--red); margin-top: 4px; font-weight: 600; }
+
+  /* Hedef paneli */
+  .goal-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .goal-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .goal-form .goal-title { font-weight: 600; color: var(--green); font-size: 15px; }
+  .goal-form input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .goal-form input:focus { outline: none; border-color: var(--green); }
+  .goal-form .amount { width: 190px; }
+  .goal-form label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .goal-form button {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .goal-form button:hover { border-color: var(--green); color: var(--green); }
+  .goal-bar { height: 10px; border-radius: 999px; background: rgba(74, 222, 128, 0.15); overflow: hidden; }
+  .goal-bar .fill { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.3s; }
+  .goal-info { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .goal-info b { color: var(--text); }
+  .goal-info .hl { color: var(--green); font-weight: 700; }
+
+  /* Hedef listesi */
+  .glist { display: flex; flex-direction: column; gap: 6px; }
+  .glist-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+  .glist-row .g-name { flex: 1; }
+  .glist-row .g-date { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .glist-row.done { opacity: 0.85; border-color: rgba(74, 222, 128, 0.35); }
+  .glist-row.done .g-name { color: var(--green); }
+  .glist-row button {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .glist-row button.achieve:hover { border-color: var(--green); color: var(--green); }
+  .glist-row button.g-del { border: none; padding: 4px; font-size: 14px; }
+  .glist-row button.g-del:hover { color: var(--red); }
+  .glist-done-title { font-size: 13px; font-weight: 600; color: var(--green); margin-top: 6px; }
+  .glist-empty { font-size: 13px; color: var(--muted); padding: 4px 2px; }
+
+  /* CP paneli */
+  .cp-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .cp-panel .cp-title { font-weight: 600; color: var(--red); font-size: 15px; }
+  .cp-panel label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .cp-panel input {
+    width: 100px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .cp-panel input:focus { outline: none; border-color: var(--red); }
+  .cp-panel select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .cp-panel select.event-on { border-color: var(--accent); color: var(--accent); }
+  .cp-panel .cp-gain { margin-left: auto; font-size: 16px; font-weight: 700; color: var(--red); }
+
+  /* Sıralama okları */
+  .move-btns { display: flex; flex-direction: column; gap: 2px; }
+  .move-btns button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 5px;
+  }
+  .move-btns button:hover { color: var(--accent); }
+  .move-btns button:disabled { opacity: 0.25; cursor: default; }
+
+  /* Gün seçici (başlığın yanında) */
+  .day-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .day-bar input[type="date"] {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color-scheme: dark;
+  }
+  .day-bar button {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .day-bar button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .day-bar button:disabled { opacity: .35; cursor: default; }
+
+  .mini-open {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+  }
+  .mini-open:hover { border-color: var(--accent); color: var(--accent); }
+
+  .mini-panel { background: #0f1218; color: #e8ecf3; font-family: 'Segoe UI', system-ui, sans-serif; padding: 8px; }
+  .mini-panel .m-head { font-size: 12px; color: #8b96a8; padding: 2px 4px 8px; display: flex; justify-content: space-between; }
+  .mini-panel .m-head b { color: #f5b942; }
+  .mini-panel .m-row { display: flex; align-items: center; gap: 8px; background: #171c26; border: 1px solid #2a3344; border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; }
+  .mini-panel .m-name { flex: 1; font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mini-panel .m-qty { min-width: 34px; text-align: center; font-size: 18px; font-weight: 700; }
+  .mini-panel .m-btn { width: 40px; height: 40px; border-radius: 9px; border: 1px solid #2a3344; background: #1e2532; color: #e8ecf3; font-size: 22px; line-height: 1; cursor: pointer; }
+  .mini-panel .m-btn.plus { border-color: #4ade80; color: #4ade80; }
+  .mini-panel .m-btn.minus { color: #8b96a8; }
+  .mini-panel .m-total { text-align: right; font-size: 15px; font-weight: 700; color: #4ade80; padding: 6px 4px 2px; }
+  .mini-panel .m-empty { font-size: 12px; color: #8b96a8; padding: 12px; text-align: center; }
+  .mini-panel .m-cp { background: #171c26; border: 1px solid #2a3344; border-radius: 10px; padding: 8px 10px; margin-bottom: 8px; }
+  .mini-panel .m-cprow { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: #8b96a8; margin-bottom: 4px; }
+  .mini-panel .m-cpin { width: 90px; background: #0f1218; border: 1px solid #2a3344; color: #e8ecf3; border-radius: 6px; padding: 5px 7px; font-size: 14px; font-weight: 600; text-align: right; }
+  .mini-panel .m-cpkas { font-size: 13px; color: #e8ecf3; text-align: right; margin-top: 2px; }
+  .mini-panel .m-cpkas b { color: #f87171; }
+  #dayPrev, #dayNext { padding: 7px 11px; font-size: 16px; line-height: 1; font-weight: 700; }
+  .past-warn {
+    color: var(--accent);
+    font-weight: 600;
+    display: none;
+    font-size: 13px;
+  }
+  .past-warn-bar { margin-bottom: 12px; }
+  .farm-check { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .farm-check input { cursor: pointer; }
+  body.farm-day .item, body.farm-day .cp-panel { border-color: #4ade80; }
+
+  /* Üst sekmeler */
+  .tabs { margin-bottom: 18px; }
+  .tabs button { padding: 10px 22px; font-size: 14px; }
+  .help-btn { margin-left: auto; background: none !important; border: 1px solid var(--border) !important; color: var(--muted) !important; }
+  .help-btn:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+  .help-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 90;
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .help-box {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    max-width: 640px; width: 100%; max-height: 88vh; display: flex; flex-direction: column;
+  }
+  .help-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+  }
+  .help-top h2 { font-size: 18px; color: var(--accent); margin: 0; }
+  .help-top button { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+  .help-top button:hover { color: var(--red); }
+  .help-body { padding: 8px 20px 20px; overflow-y: auto; }
+  .help-body .help-intro { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 12px 0; }
+  .help-body h3 { font-size: 15px; color: var(--text); margin: 18px 0 6px; }
+  .help-body ul { margin: 0 0 4px; padding-left: 20px; }
+  .help-body li { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .help-body li b { color: var(--text); }
+  .help-body p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  body.editing-past .item,
+  body.editing-past .cp-panel { border-color: var(--accent); }
+
+  .cp-totals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .cp-totals .ct {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+  }
+  .cp-totals .ct .l { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .cp-totals .ct .v { font-size: 19px; font-weight: 700; }
+  .cp-totals .ct.earn .v { color: var(--green); }
+  .cp-totals .ct.spent .v { color: var(--red); }
+  .cp-totals .ct.now .v { color: var(--accent); }
+
+  /* Item ekleme */
+  .add-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .add-form input {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .add-form input:focus { outline: none; border-color: var(--accent); }
+  .add-form .name { flex: 2; min-width: 160px; }
+  .add-form .price { flex: 1; min-width: 110px; }
+  .add-form button {
+    background: var(--accent);
+    color: #1a1405;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .add-form button:hover { filter: brightness(1.1); }
+
+  /* Item listesi */
+  .items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+
+  .item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .item .info { flex: 1; min-width: 140px; }
+  .item .name { font-size: 15px; font-weight: 600; }
+  .item .price-line { font-size: 12px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+  .item .price-edit {
+    width: 110px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--blue);
+    border-radius: 6px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .item .price-edit:focus { outline: none; border-color: var(--blue); color: var(--text); }
+
+  .qty-controls { display: flex; align-items: center; gap: 6px; }
+  .qty-controls button {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: var(--text);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .qty-controls button:hover { border-color: var(--accent); color: var(--accent); }
+  .qty-controls input {
+    width: 64px; height: 34px;
+    text-align: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .qty-controls input:focus { outline: none; border-color: var(--accent); }
+
+  .item .earn {
+    min-width: 110px;
+    text-align: right;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .item .del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .item .del:hover { color: var(--red); }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+
+  /* CP item rozeti */
+  .cp-badge {
+    font-size: 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 9px;
+    cursor: pointer;
+    color: var(--muted);
+    display: inline-block;
+    margin-top: 4px;
+    user-select: none;
+  }
+  .cp-badge:hover { border-color: var(--blue); }
+  .cp-badge.on { border-color: var(--blue); color: var(--blue); background: rgba(57, 135, 229, 0.1); }
+  .pin-badge {
+    font-size: 11px; border: 1px solid var(--border); border-radius: 999px;
+    padding: 2px 9px; cursor: pointer; color: var(--muted); display: inline-block; margin-top: 4px; user-select: none;
+  }
+  .pin-badge:hover { border-color: var(--accent); }
+  .pin-badge.on { border-color: var(--accent); color: var(--accent); background: rgba(245, 185, 66, 0.1); }
+  .cp-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 0 4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Analiz */
+  .analysis { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .seg {
+    display: inline-flex;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .seg button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 7px 16px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .seg button.active { background: var(--panel2); color: var(--text); font-weight: 600; }
+  .filter-row .range-note { font-size: 12px; color: var(--muted); }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .tile { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 13px 16px; }
+  .tile .t-label { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  .tile .t-value { font-size: 20px; font-weight: 600; color: var(--text); }
+  .tile .t-note { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .chart-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px 8px; }
+  .chart-card h3 {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .chart-card h3 .key { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .chart-card svg { display: block; width: 100%; }
+  .chart-card svg text { font-family: 'Segoe UI', system-ui, sans-serif; }
+  .analysis-hint {
+    background: var(--panel);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  #vizTip {
+    position: fixed;
+    background: #0a0d13;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    max-width: 240px;
+  }
+  #vizTip .tip-title { color: var(--muted); margin-bottom: 4px; }
+  #vizTip .tip-row { display: flex; align-items: center; gap: 6px; padding: 1px 0; }
+  #vizTip .tip-key { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+  #vizTip .tip-val { color: var(--text); font-weight: 700; }
+
+  .analysis details { color: var(--muted); font-size: 13px; }
+  .analysis summary { cursor: pointer; padding: 4px 2px; }
+  .analysis table { width: 100%; border-collapse: collapse; margin-top: 8px; background: var(--panel); border-radius: 8px; }
+  .analysis th, .analysis td { text-align: right; padding: 6px 12px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  .analysis th:first-child, .analysis td:first-child { text-align: left; }
+  .analysis th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  .analysis td { color: var(--text); }
+
+  table.brk { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 10px; overflow: hidden; }
+  table.brk th, table.brk td { text-align: right; padding: 8px 12px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; font-size: 13px; }
+  table.brk th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  table.brk th:first-child, table.brk td:first-child { text-align: left; }
+  table.brk td:first-child { color: var(--text); }
+  table.brk .brk-total td { font-weight: 700; color: var(--green); border-bottom: none; border-top: 2px solid var(--border); }
+  .brk-bar { display: inline-block; width: 60px; height: 6px; background: var(--panel2); border-radius: 3px; overflow: hidden; vertical-align: middle; margin-right: 6px; }
+  .brk-bar span { display: block; height: 100%; background: var(--green); }
+  .brk-cmp { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-top: 12px; font-size: 14px; line-height: 1.9; color: var(--muted); }
+  .brk-cmp b { color: var(--text); }
+  .brk-cmp small { color: var(--muted); }
+
+  .gc-calc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .gc-calc label { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .gc-calc input {
+    width: 110px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .gc-calc input:focus { outline: none; border-color: var(--accent); }
+  .gc-calc .gc-unit { font-size: 12px; color: var(--muted); }
+  .gc-calc .gc-result { margin-left: auto; font-size: 22px; font-weight: 700; color: var(--green); }
+
+  /* Geçmiş */
+  h2 { font-size: 16px; margin-bottom: 4px; color: var(--muted); font-weight: 600; }
+  .section-hint { font-size: 12px; color: var(--muted); opacity: .8; margin: 0 0 10px; line-height: 1.5; }
+
+  .update-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(74, 222, 128, 0.1); border: 1px solid var(--green);
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 14px;
+    font-size: 13px; color: var(--text);
+  }
+  .update-bar a {
+    background: var(--green); color: #06220f; text-decoration: none;
+    padding: 6px 14px; border-radius: 8px; font-weight: 700; white-space: nowrap;
+  }
+  .update-bar button { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+  .update-bar button:hover { color: var(--red); }
+
+  .welcome {
+    position: relative; background: var(--panel); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 12px; padding: 14px 40px 14px 16px;
+    margin-bottom: 16px; font-size: 13px; color: var(--muted); line-height: 1.7;
+  }
+  .welcome b { color: var(--text); }
+  .welcome .w-steps { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; }
+  .welcome .w-steps > span { flex: 1; min-width: 200px; }
+  .welcome .w-steps b { display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; background: var(--accent); color: #1a1405; border-radius: 50%; font-size: 11px; margin-right: 4px; }
+  .welcome .w-more { display: block; margin-top: 8px; font-size: 12px; opacity: .85; }
+  .welcome .w-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; }
+  .welcome .w-close:hover { color: var(--red); }
+  .history { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .history-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .history-row:last-child { border-bottom: none; }
+  .history-row:hover { background: var(--panel2); }
+  .history-row .date { color: var(--text); }
+  .history-row .date small { color: var(--muted); margin-left: 6px; }
+  .history-row .total { color: var(--green); font-weight: 600; }
+  .history-detail {
+    padding: 6px 16px 12px 28px;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    display: none;
+  }
+  .history-detail div { padding: 2px 0; }
+
+  .hist-pager { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 10px; }
+  .hist-pager button {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer;
+  }
+  .hist-pager button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .hist-pager button:disabled { opacity: .35; cursor: default; }
+  .hist-pager .hist-pinfo { font-size: 13px; color: var(--muted); min-width: 150px; text-align: center; }
+  .history-detail span { color: var(--text); }
+
+  footer { margin-top: 20px; text-align: center; font-size: 12px; color: var(--muted); }
+  footer button {
+    background: none; border: none; color: var(--muted);
+    text-decoration: underline; cursor: pointer; font-size: 12px;
+  }
+  footer button:hover { color: var(--red); }
+</style>
+</head>
+<body>
+
+<div id="lockScreen" style="position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="max-width:380px;width:100%;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px 24px;text-align:center">
+    <div style="font-size:38px;margin-bottom:8px">🔒</div>
+    <h1 style="font-size:20px;color:var(--accent);margin-bottom:6px">Kazanç Takip</h1>
+    <p id="lockMsg" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px"></p>
+    <input id="lockPass" type="password" data-i18n-ph="lic_ph" placeholder="Şifre" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-size:15px;margin-bottom:8px">
+    <input id="lockPass2" type="password" placeholder="Şifreyi tekrar gir" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-size:15px;margin-bottom:8px;display:none">
+    <div id="lockErr" style="font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px"></div>
+    <button id="lockBtn" style="width:100%;background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer">Aç</button>
+    <p id="lockHint" style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5"></p>
+  </div>
+</div>
+
+<div class="container" style="display:none">
+
+  <header>
+    <h1>⚒️ Kazanç Takip <span id="todayLabel" style="font-size:11px;color:var(--muted);font-weight:normal"></span></h1>
+    <div class="day-bar">
+      <button type="button" id="dayPrev" title="Bir gün öncesi">‹</button>
+      <label>📆 <input type="date" id="dayPicker"></label>
+      <button type="button" id="dayNext" title="Bir gün sonrası">›</button>
+      <button type="button" id="todayBtn" data-i18n="today_btn">Bugüne dön</button>
+      <label class="farm-check" title="Bu gün farm günü (PvP yok) — kazanç tahmini ortalamasına katılmaz"><input type="checkbox" id="farmDay"> <span data-i18n="farm_day">🌾 Farm günü</span></label>
+    </div>
+    <div class="char-box">
+      🧍 <select id="charSel" title="Karakter seç"></select>
+      <button type="button" id="charAdd" title="Yeni karakter ekle">+</button>
+      <button type="button" id="charRename" title="Karakteri yeniden adlandır">✎</button>
+      <button type="button" id="charDel" title="Karakteri sil">🗑️</button>
+    </div>
+    <div class="currency-box">
+      <span data-i18n="currency_label">Para birimi:</span> <input type="text" id="currency" maxlength="10">
+    </div>
+  </header>
+  <div class="past-warn-bar past-warn" id="pastWarn" data-i18n="past_warn">⚠️ Geçmiş bir günü düzenliyorsun — girişler o güne kaydedilir</div>
+
+  <div class="seg tabs">
+    <button type="button" id="tabBtnMain" class="active" data-i18n="tab_main">📋 Takip</button>
+    <button type="button" id="tabBtnAnalysis" data-i18n="tab_analysis">🎯 Analiz &amp; Hedef</button>
+    <button type="button" id="helpBtn" class="help-btn" data-i18n="help_btn">❓ Nasıl kullanılır?</button>
+    <button type="button" id="langBtn" class="help-btn" style="margin-left:6px" title="Language / Dil">🌐 EN</button>
+  </div>
+
+  <div id="helpModal" class="help-modal" style="display:none">
+    <div class="help-box">
+      <div class="help-top">
+        <h2>📖 Nasıl Kullanılır?</h2>
+        <button type="button" id="helpClose">✕</button>
+      </div>
+      <div class="help-body">
+        <p class="help-intro">Bu uygulama, oyunda kastığın itemlerin ve CP'nin günlük kaydını tutar; kazancını, verimini ve hedeflerini takip eder. Her şey <b>bu tarayıcıda</b> saklanır, internet gerekmez.</p>
+
+        <h3>📋 Günlük Takip</h3>
+        <ul>
+          <li><b>Item ekle:</b> Üstteki forma item adını ve birim fiyatını yaz, <b>+ Ekle</b>. Bir kez eklersin, her gün sadece adedini değiştirirsin.</li>
+          <li><b>Adet gir:</b> Item satırındaki <b>− / +</b> ile ya da kutuya sayı yazarak. Kazanç anında hesaplanır.</li>
+          <li><b>⚔️ CP:</b> Item CP karşılığı elde ediliyorsa işaretle — analize dahil olur.</li>
+          <li><b>📌 Panel:</b> Bu item'i "Oyun Paneli"nde göster (aşağıda).</li>
+          <li><b>Birim fiyat</b> değişince satırdaki mavi kutudan güncelle; geçmiş günler o günkü fiyattan kalır.</li>
+        </ul>
+
+        <h3>⚔️ CP (Kill Puanı)</h3>
+        <ul>
+          <li><b>Gün başı / Gün sonu:</b> Günün başındaki ve sonundaki CP'ni yaz. Fark = o gün kastığın CP.</li>
+          <li><b>Harcanan:</b> Gün içinde CP harcadıysan (CP azaldıysa) buraya yaz, yoksa kasılan eksik/eksi görünür.</li>
+          <li><b>Ekstra:</b> Kesim dışı (görev/etkinlik) gelen CP — verimi bozmasın diye hesaptan düşülür.</li>
+          <li><b>Event:</b> 3x/4x etkinlik varsa seç; verim ona göre düzeltilir.</li>
+        </ul>
+
+        <h3>📆 Gün Seçimi & 🌾 Farm Günü</h3>
+        <ul>
+          <li><b>‹ ›</b> okları veya takvimle geçmiş bir güne git; girişler o güne kaydedilir (sarı uyarı çıkar).</li>
+          <li><b>🌾 Farm günü:</b> PvP yapmadığın günü işaretle — kazanç tahmini ortalamasına katılmaz, ama parası birikime sayılır.</li>
+        </ul>
+
+        <h3>🧍 Karakterler</h3>
+        <ul>
+          <li>Sağ üstten karakter seç, <b>+</b> ile yeni ekle, <b>✎</b> adlandır, <b>🗑️</b> sil.</li>
+          <li>Item listesi ve para birimi <b>ortak</b>; kazançlar, CP, hedefler her karaktere <b>ayrı</b>.</li>
+        </ul>
+
+        <h3>🎯 Hedef & Kasa (Analiz sekmesi)</h3>
+        <ul>
+          <li><b>Hedef listesi:</b> Fiyatlı hedefler ekle (SET, pelerin…). İlk sıradaki otomatik "aktif hedef" olur; ✔ ile başardığını işaretle, ✎ ile düzenle.</li>
+          <li><b>💰 Kasa / 📦 Satılmamış:</b> Elindeki nakit ve satamadığın malların değeri. İlerleme ve tahmin buna göre hesaplanır.</li>
+          <li><b>Tahmin:</b> Son 30 günün (farm hariç) ortalamasıyla "kaç günde biter" ve tarih verir.</li>
+        </ul>
+
+        <h3>📊 Analiz</h3>
+        <ul>
+          <li><b>Verim grafiği:</b> 1.000 CP başına <b>değer</b> (adet değil) — az ama pahalı drop, çok ama ucuzdan daha verimlidir.</li>
+          <li><b>Item dökümü:</b> Bugüne kadar hangi item ne kadar kazandırdı + kasayla karşılaştırma.</li>
+        </ul>
+
+        <h3>📌 Oyun Paneli & 💎 Araçlar</h3>
+        <ul>
+          <li><b>📌 Oyun Paneli:</b> Oyunun üstünde kalan küçük pencere — alt-tab yapmadan adet ve CP gir. <i>(Chrome/Edge gerekir.)</i> Panelde çıkacak itemleri 📌 ile seçersin.</li>
+          <li><b>💎 GC Hesaplayıcı:</b> GC adedi × birim fiyatı = toplam değeri.</li>
+        </ul>
+
+        <h3>💾 Yedekleme</h3>
+        <p>Alttan <b>Yedek indir</b> ile tüm verini tek dosyaya kaydet, <b>Yedek yükle</b> ile geri getir. Tarayıcı verisi silinirse diye ara sıra yedek al — özellikle başka bilgisayara geçerken.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="updateBar" class="update-bar" style="display:none">
+    <span id="updateMsg"></span>
+    <a id="updateLink" href="#" target="_blank" rel="noopener">⬇ İndir</a>
+    <button type="button" id="updateClose" title="Kapat">✕</button>
+  </div>
+
+  <div id="tabMain">
+
+  <div id="welcome" class="welcome" style="display:none">
+    <button type="button" id="welcomeClose" class="w-close" title="Kapat">✕</button>
+    <b data-i18n="welcome_hi">👋 Hoş geldin!</b> <span data-i18n="welcome_lead">3 adımda başla:</span>
+    <span class="w-steps">
+      <span><b>1</b> <span data-i18n="welcome_1">Aşağıdan itemlerini ekle (ad + fiyat).</span></span>
+      <span><b>2</b> <span data-i18n="welcome_2">Oynarken adetleri + ile arttır, CP'ni gir.</span></span>
+      <span><b>3</b> <span data-i18n="welcome_3">Hedef koy, analizden verimini izle.</span></span>
+    </span>
+    <span class="w-more" data-i18n="welcome_more">Ayrıntı için üstteki ❓ Nasıl kullanılır? butonuna bak.</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat today">
+      <div class="label" data-i18n="stat_today">Bugün</div>
+      <div class="value" id="statToday">0</div>
+      <div class="sub" id="cpStatToday"></div>
+    </div>
+    <div class="stat">
+      <div class="label" data-i18n="stat_week">Bu Hafta</div>
+      <div class="value" id="statWeek">0</div>
+      <div class="sub" id="cpStatWeek"></div>
+    </div>
+    <div class="stat">
+      <div class="label" data-i18n="stat_month">Bu Ay</div>
+      <div class="value" id="statMonth">0</div>
+      <div class="sub" id="cpStatMonth"></div>
+    </div>
+    <div class="stat">
+      <div class="label" data-i18n="stat_total">Toplam</div>
+      <div class="value" id="statTotal">0</div>
+      <div class="sub" id="cpStatTotal"></div>
+    </div>
+    <div class="stat avg">
+      <div class="label" data-i18n="stat_avg">Günlük Ortalama</div>
+      <div class="value" id="statAvg">0</div>
+      <div class="sub" id="avgNote"></div>
+    </div>
+  </div>
+
+  <div class="cp-panel">
+    <span class="cp-title">⚔️ CP</span>
+    <label><span data-i18n="cp_start">Gün başı:</span> <input type="text" inputmode="numeric" id="cpStart" placeholder="örn: 300"></label>
+    <label><span data-i18n="cp_end">Gün sonu:</span> <input type="text" inputmode="numeric" id="cpEnd" placeholder="örn: 400"></label>
+    <label><span data-i18n="cp_spent">Harcanan:</span> <input type="text" inputmode="numeric" id="cpSpent" placeholder="örn: 100"></label>
+    <label title="Kesim dışı yollarla (görev/etkinlik/item) gelen CP — verim istatistiğinden düşülür, kesim verimini bozmaz"><span data-i18n="cp_extra">Ekstra:</span> <input type="text" inputmode="numeric" id="cpExtra" placeholder="örn: 50"></label>
+    <label title="CP event çarpanı — 3x event varken 3x seç, verim hesabı ona göre düzeltilir">Event:
+      <select id="cpMult">
+        <option value="1">1x</option>
+        <option value="2">2x</option>
+        <option value="3">3x</option>
+        <option value="4">4x</option>
+        <option value="5">5x</option>
+      </select>
+    </label>
+    <span class="cp-gain" id="cpGain"></span>
+  </div>
+
+  <div class="cp-totals" id="cpTotals"></div>
+
+  <form class="add-form" id="addForm">
+    <input class="name" id="newName" type="text" data-i18n-ph="add_name_ph" placeholder="Item adı (örn: Demir Cevheri)" required>
+    <input class="price" id="newPrice" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="add_price_ph" placeholder="Birim fiyat" required>
+    <label class="cp-check" title="Bu nesne CP karşılığında mı elde ediliyor?"><input type="checkbox" id="newCp"> <span data-i18n="add_cp">⚔️ CP ile</span></label>
+    <button type="submit" data-i18n="add_btn">+ Ekle</button>
+  </form>
+
+  <button type="button" id="miniBtn" class="mini-open" data-i18n="mini_open" title="Oyunun üstünde kalan küçük panel — alt-tab yapmadan adet arttır">📌 Oyun Paneli (üstte kalır)</button>
+
+  <div class="items" id="itemList"></div>
+  <div class="empty" id="emptyMsg" style="display:none" data-i18n="empty_items">Henüz item eklenmedi.</div>
+
+  <!-- Mini panel içeriği (Picture-in-Picture penceresine taşınır) -->
+  <div id="miniPanel" class="mini-panel" style="display:none"></div>
+
+  <h2 data-i18n="hist_h">📅 Günlük Geçmiş</h2>
+  <p class="section-hint" data-i18n="hist_hint">Her günün toplam kazancını gösterir. Bir satıra tıkla → o gün hangi itemden kaç adet düştüğünü ve CP detayını gör. Sayfa başına 7 gün.</p>
+  <div class="history" id="historyList"></div>
+  <div class="hist-pager" id="histPager"></div>
+
+  <h2 data-i18n="gc_h">💎 GC Hesaplayıcı</h2>
+  <p class="section-hint" data-i18n="gc_hint">Elindeki GC'nin kaç para ettiğini hesaplar. GC adedini ve 1 GC'nin kaç milyon olduğunu gir; toplam değeri m/b cinsinden görürsün.</p>
+  <div class="gc-calc">
+    <label><span data-i18n="gc_amount">GC adet</span> <input id="gcAmount" type="text" inputmode="numeric" autocomplete="off" placeholder="örn: 500"></label>
+    <label><span data-i18n="gc_price">Birim fiyat</span> <input id="gcPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="örn: 14"> <span class="gc-unit" data-i18n="gc_unit">milyon / GC</span></label>
+    <div class="gc-result" id="gcResult">—</div>
+  </div>
+  </div><!-- /tabMain -->
+
+  <div id="tabAnalysis" style="display:none">
+    <div class="goal-panel">
+      <div class="goal-form">
+        <span class="goal-title" data-i18n="goal_h">🎯 Hedef</span>
+        <input class="amount" id="goalAmount" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="goal_amount_ph" placeholder="Hedef tutar, örn: 200,000,000">
+        <label><span data-i18n="goal_dev">Sapma: %</span><input id="goalDev" type="number" min="0" max="90" step="5" style="width:58px" placeholder="20"></label>
+        <button type="button" id="goalSave" data-i18n="goal_save">Kaydet</button>
+        <button type="button" id="goalClear" style="display:none" data-i18n="goal_clear">Kaldır</button>
+      </div>
+      <div class="goal-form">
+        <label title="Elindeki nakit — güncellediğinde o güne kadarki tüm kazançlar kasaya işlenmiş sayılır"><span data-i18n="vault_label">💰 Kasa:</span>
+          <input id="vaultAmount" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="vault_ph" placeholder="kasandaki para" style="width:150px">
+        </label>
+        <label title="Henüz satamadığın malların yaklaşık değeri (örn: bekleyen zindan biletleri) — hedefe bu da sayılır"><span data-i18n="stock_label">📦 Satılmamış:</span>
+          <input id="vaultStock" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="stock_ph" placeholder="bekleyen mal değeri" style="width:150px">
+        </label>
+        <span id="vaultNote" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <div class="goal-bar" id="goalBarWrap" style="display:none"><div class="fill" id="goalFill"></div></div>
+      <div class="goal-info" id="goalInfo"></div>
+    </div>
+
+    <h2 data-i18n="goallist_h">🏆 Hedef Listesi</h2>
+    <p class="section-hint" data-i18n="goallist_hint" data-i18n-html>Almak istediğin şeyleri (SET, pelerin…) fiyatıyla ekle. En üstteki hedef "aktif" olur ve yukarıdaki ilerleme ona göre işler. ✔ başardım · ✎ düzenle · ▲▼ sırala.</p>
+    <div class="goal-panel">
+      <form class="goal-form" id="goalListForm">
+        <input id="newGoalName" type="text" autocomplete="off" data-i18n-ph="newgoal_ph" placeholder="Yeni hedef, örn: +9 silah basmak" style="flex:1;min-width:180px" required>
+        <input id="newGoalPrice" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="newgoalprice_ph" placeholder="Fiyatı, örn: 200,000,000" style="width:170px" required>
+        <button type="submit">+ Ekle</button>
+      </form>
+      <div class="glist" id="goalsOpen"></div>
+      <div class="glist-done-title" id="goalsDoneTitle" style="display:none">✅ Başarılanlar</div>
+      <div class="glist" id="goalsDone"></div>
+    </div>
+
+    <h2 data-i18n="analysis_h">📊 Analiz — CP Verimi</h2>
+    <p class="section-hint" data-i18n="analysis_hint" data-i18n-html>Verim = 1.000 CP başına kazandığın <b>değer</b> (adet değil). Az ama pahalı drop, çok ama ucuz droptan daha verimlidir. Günlük/haftalık bakabilirsin.</p>
+    <div class="analysis">
+      <div class="filter-row">
+        <div class="seg">
+          <button type="button" id="segDaily" class="active" data-i18n="seg_daily">Günlük</button>
+          <button type="button" id="segWeekly" data-i18n="seg_weekly">Haftalık</button>
+        </div>
+        <span class="range-note" id="rangeNote"></span>
+      </div>
+      <div id="analysisBody"></div>
+    </div>
+
+    <h2 data-i18n="brk_h">💰 Item Kazanç Dökümü</h2>
+    <p class="section-hint" data-i18n="brk_hint">Bugüne kadar hangi item ne kadar kazandırdı (adet + değer + pay). Kasa değeri girdiysen, düşen toplamla eldeki para karşılaştırılır — uyumlu gidip gitmediğini görürsün.</p>
+    <div id="itemBreakdown"></div>
+  </div><!-- /tabAnalysis -->
+
+  <footer>
+    <span data-i18n="footer_note">Veriler bu tarayıcıda saklanır</span> &nbsp;•&nbsp;
+    <button id="exportBtn" data-i18n="export_btn">💾 Yedek indir</button> &nbsp;•&nbsp;
+    <button id="importBtn" data-i18n="import_btn">📂 Yedek yükle</button> &nbsp;•&nbsp;
+    <button id="resetBtn" data-i18n="reset_btn">Tüm verileri sıfırla</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+  </footer>
+
+</div>
+
+<div id="vizTip"></div>
+
+<script>
+const KEY = 'kazancTakipV1';        // kullanıcı verisi (kendi bilgisayarında)
+const LIC_KEY = 'kazancLisans';     // kayıtlı lisans anahtarı
+const SEEN_KEY = 'kazancSonGun';    // saat geri alma koruması
+
+// Lisansı doğrulayan AÇIK anahtar (gizli değil — üretici ayrı dosyada)
+const LIC_PUB = {"kty":"EC","crv":"P-256","x":"1a40a8Aa9bvyUnykLjB64EGubcyRzs8vTjkYSwpjsrU","y":"Zd1zOMYfwNOI7-aW_hnpyZBFzg8AGvT0Sn1q26NnjQY"};
+
+// ===== GÜNCELLEME AYARLARI =====
+// Her yeni sürümde APP_VERSION'ı 1 arttır. Buluttaki surum.json'da da aynı sayıyı yükselt.
+const APP_VERSION = 1;
+// Buraya kendi GitHub "raw" adresini yaz (surum.json'un bulunduğu link). Boşsa güncelleme kontrolü kapalı.
+const UPDATE_URL = ''; // örn: 'https://raw.githubusercontent.com/KULLANICI/REPO/main/surum.json'
+
+// state: { currency, items(ortak katalog), activeChar, chars:{ id:{ name, records, cp, goals, goal, farm, vault } } }
+let state = { items: [], currency: 'Gold', activeChar: '', chars: {} };
+let A = null; // aktif karakterin verisi (records/cp/goals/goal/farm/vault)
+
+// ================= DİL / LANGUAGE =================
+let LANG = localStorage.getItem('lang') || 'tr';
+const I18N = {
+  tr: {
+    help_btn: '❓ Nasıl kullanılır?',
+    title_sub_lic: '', tab_main: '📋 Takip', tab_analysis: '🎯 Analiz & Hedef',
+    currency_label: 'Para birimi:', today_btn: 'Bugüne dön', farm_day: '🌾 Farm günü',
+    past_warn: '⚠️ Geçmiş bir günü düzenliyorsun — girişler o güne kaydedilir',
+    stat_today: 'Bugün', stat_week: 'Bu Hafta', stat_month: 'Bu Ay', stat_total: 'Toplam', stat_avg: 'Günlük Ortalama',
+    cp_start: 'Gün başı:', cp_end: 'Gün sonu:', cp_spent: 'Harcanan:', cp_extra: 'Ekstra:', cp_event: 'Event:',
+    add_name_ph: 'Item adı (örn: Demir Cevheri)', add_price_ph: 'Birim fiyat', add_cp: '⚔️ CP ile', add_btn: '+ Ekle',
+    mini_open: '📌 Oyun Paneli (üstte kalır)',
+    empty_items: 'Henüz item eklenmedi. Yukarıdan item adı ve birim fiyatını girip ekle, sonra sadece adet arttırarak kazancını takip et.',
+    hist_h: '📅 Günlük Geçmiş', hist_hint: 'Her günün toplam kazancını gösterir. Bir satıra tıkla → o gün hangi itemden kaç adet düştüğünü ve CP detayını gör. Sayfa başına 7 gün.',
+    gc_h: '💎 GC Hesaplayıcı', gc_hint: "Elindeki GC'nin kaç para ettiğini hesaplar. GC adedini ve 1 GC'nin kaç milyon olduğunu gir; toplam değeri m/b cinsinden görürsün.",
+    gc_amount: 'GC adet', gc_price: 'Birim fiyat', gc_unit: 'milyon / GC',
+    goal_h: '🎯 Hedef', goal_amount_ph: 'Hedef tutar, örn: 200,000,000', goal_dev: 'Sapma: %', goal_save: 'Kaydet', goal_clear: 'Kaldır',
+    vault_label: '💰 Kasa:', vault_ph: 'kasandaki para', stock_label: '📦 Satılmamış:', stock_ph: 'bekleyen mal değeri',
+    goallist_h: '🏆 Hedef Listesi', goallist_hint: 'Almak istediğin şeyleri (SET, pelerin…) fiyatıyla ekle. En üstteki hedef "aktif" olur ve yukarıdaki ilerleme ona göre işler. ✔ başardım · ✎ düzenle · ▲▼ sırala.',
+    newgoal_ph: 'Yeni hedef, örn: +9 silah basmak', newgoalprice_ph: 'Fiyatı, örn: 200,000,000',
+    analysis_h: '📊 Analiz — CP Verimi', analysis_hint: 'Verim = 1.000 CP başına kazandığın <b>değer</b> (adet değil). Az ama pahalı drop, çok ama ucuz droptan daha verimlidir. Günlük/haftalık bakabilirsin.',
+    seg_daily: 'Günlük', seg_weekly: 'Haftalık',
+    brk_h: '💰 Item Kazanç Dökümü', brk_hint: 'Bugüne kadar hangi item ne kadar kazandırdı (adet + değer + pay). Kasa değeri girdiysen, düşen toplamla eldeki para karşılaştırılır — uyumlu gidip gitmediğini görürsün.',
+    footer_note: 'Veriler bu tarayıcıda saklanır', export_btn: '💾 Yedek indir', import_btn: '📂 Yedek yükle', reset_btn: 'Tüm verileri sıfırla',
+    welcome_hi: '👋 Hoş geldin!', welcome_lead: '3 adımda başla:',
+    welcome_1: 'Aşağıdan itemlerini ekle (ad + fiyat).', welcome_2: 'Oynarken adetleri + ile arttır, CP\'ni gir.', welcome_3: 'Hedef koy, analizden verimini izle.',
+    welcome_more: 'Ayrıntı için üstteki ❓ Nasıl kullanılır? butonuna bak.',
+    lic_msg: 'Bu uygulamayı kullanmak için lisans anahtarına ihtiyacın var.', lic_btn: 'Etkinleştir', lic_hint: 'Lisans anahtarını uygulamayı sana veren kişiden al.', lic_ph: 'Lisans anahtarını buraya yapıştır'
+  },
+  en: {
+    help_btn: '❓ How to use?',
+    title_sub_lic: '', tab_main: '📋 Tracking', tab_analysis: '🎯 Analysis & Goals',
+    currency_label: 'Currency:', today_btn: 'Back to today', farm_day: '🌾 Farm day',
+    past_warn: '⚠️ You are editing a past day — entries are saved to that day',
+    stat_today: 'Today', stat_week: 'This Week', stat_month: 'This Month', stat_total: 'Total', stat_avg: 'Daily Average',
+    cp_start: 'Day start:', cp_end: 'Day end:', cp_spent: 'Spent:', cp_extra: 'Extra:', cp_event: 'Event:',
+    add_name_ph: 'Item name (e.g. Iron Ore)', add_price_ph: 'Unit price', add_cp: '⚔️ via CP', add_btn: '+ Add',
+    mini_open: '📌 Game Panel (stays on top)',
+    empty_items: 'No items yet. Add an item name and unit price above, then just increase the quantity to track your earnings.',
+    hist_h: '📅 Daily History', hist_hint: 'Shows each day\'s total earnings. Click a row → see which items dropped and the CP details for that day. 7 days per page.',
+    gc_h: '💎 GC Calculator', gc_hint: 'Calculates how much your GC is worth. Enter the GC amount and how many million 1 GC is; see the total in m/b.',
+    gc_amount: 'GC amount', gc_price: 'Unit price', gc_unit: 'million / GC',
+    goal_h: '🎯 Goal', goal_amount_ph: 'Goal amount, e.g. 200,000,000', goal_dev: 'Variance: %', goal_save: 'Save', goal_clear: 'Remove',
+    vault_label: '💰 Vault:', vault_ph: 'cash in vault', stock_label: '📦 Unsold:', stock_ph: 'pending goods value',
+    goallist_h: '🏆 Goal List', goallist_hint: 'Add the things you want (SET, cape…) with a price. The top goal becomes "active" and the progress above tracks it. ✔ done · ✎ edit · ▲▼ reorder.',
+    newgoal_ph: 'New goal, e.g. +9 weapon', newgoalprice_ph: 'Price, e.g. 200,000,000',
+    analysis_h: '📊 Analysis — CP Efficiency', analysis_hint: 'Efficiency = <b>value</b> earned per 1,000 CP (not count). A rare expensive drop beats many cheap ones. View daily/weekly.',
+    seg_daily: 'Daily', seg_weekly: 'Weekly',
+    brk_h: '💰 Item Earnings Breakdown', brk_hint: 'How much each item earned so far (count + value + share). If you set a vault value, total drops are compared with cash on hand — see if it lines up.',
+    footer_note: 'Data is stored in this browser', export_btn: '💾 Download backup', import_btn: '📂 Load backup', reset_btn: 'Reset all data',
+    welcome_hi: '👋 Welcome!', welcome_lead: 'Start in 3 steps:',
+    welcome_1: 'Add your items below (name + price).', welcome_2: 'While playing, raise counts with +, enter your CP.', welcome_3: 'Set a goal, watch efficiency in Analysis.',
+    welcome_more: 'For details, see the ❓ How to use? button above.',
+    lic_msg: 'You need a license key to use this app.', lic_btn: 'Activate', lic_hint: 'Get the license key from whoever gave you the app.', lic_ph: 'Paste your license key here'
+  }
+};
+function t(key) { return (I18N[LANG] && I18N[LANG][key]) || (I18N.tr[key] || key); }
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t(el.dataset.i18n);
+    if (el.dataset.i18nHtml !== undefined) el.innerHTML = v; else el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  const lb = document.getElementById('langBtn');
+  if (lb) lb.textContent = LANG === 'tr' ? '🌐 EN' : '🌐 TR';
+}
+
+const unb64u = s => Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
+
+function blankChar(name) {
+  return { name: name || 'Karakter', records: {}, cp: {}, goals: [], goal: null, farm: {}, vault: null };
+}
+
+function normalize(s) {
+  if (!s || typeof s !== 'object') s = {};
+  if (!s.items) s.items = [];
+  if (!s.currency) s.currency = 'Gold';
+  // v1 (tek karakter, düz yapı) → v2 (çok karakter) göçü
+  if (!s.chars) {
+    const id = 'c' + Math.abs((JSON.stringify(s.records||{}).length * 2654435761) | 0).toString(36);
+    const c = blankChar('Karakter 1');
+    c.records = s.records || {}; c.cp = s.cp || {}; c.goals = s.goals || [];
+    c.goal = s.goal || null; c.farm = s.farm || {}; c.vault = s.vault || null;
+    s.chars = {}; s.chars[id] = c; s.activeChar = id;
+    delete s.records; delete s.cp; delete s.goals; delete s.goal; delete s.farm; delete s.vault;
+  }
+  // her karakteri tamamla
+  for (const id in s.chars) {
+    const c = s.chars[id];
+    if (!c.name) c.name = 'Karakter';
+    if (!c.records) c.records = {};
+    if (!c.cp) c.cp = {};
+    if (!c.goals) c.goals = [];
+    if (!c.farm) c.farm = {};
+    if (c.goal === undefined) c.goal = null;
+    if (c.vault === undefined) c.vault = null;
+  }
+  if (!Object.keys(s.chars).length) { const id = 'c' + Date.now().toString(36); s.chars[id] = blankChar('Karakter 1'); s.activeChar = id; }
+  if (!s.activeChar || !s.chars[s.activeChar]) s.activeChar = Object.keys(s.chars)[0];
+  return s;
+}
+
+// state'i ata ve aktif karaktere göre A'yı ayarla
+function useState(s) { state = normalize(s); A = state.chars[state.activeChar]; }
+
+function load() {
+  let s = null;
+  try { const raw = localStorage.getItem(KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
+  useState(s);
+  return state;
+}
+
+function save() {
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+// Lisans anahtarını doğrula: imza geçerli mi + süresi dolmuş mu + saat geri mi alınmış
+// dönüş: { ok:true, exp, ad } | { ok:false, reason }
+async function verifyLicense(lic) {
+  try {
+    const [pB, sB] = lic.trim().split('.');
+    if (!pB || !sB) return { ok: false, reason: 'format' };
+    const pubK = await crypto.subtle.importKey('jwk', LIC_PUB, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+    const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pubK, unb64u(sB), unb64u(pB));
+    if (!valid) return { ok: false, reason: 'imza' };
+    const payload = JSON.parse(new TextDecoder().decode(unb64u(pB)));
+    const today = todayKey();
+    // saat geri alma koruması
+    const seen = localStorage.getItem(SEEN_KEY);
+    if (seen && today < seen) return { ok: false, reason: 'saat' };
+    if (today > payload.exp) return { ok: false, reason: 'süre', exp: payload.exp };
+    localStorage.setItem(SEEN_KEY, today > (seen || '') ? today : seen);
+    return { ok: true, exp: payload.exp, ad: payload.ad || '' };
+  } catch (e) { return { ok: false, reason: 'format' }; }
+}
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Düzenlenen gün — varsayılan bugün, gün seçiciyle geçmiş bir gün seçilebilir
+let selectedDate = todayKey();
+let histPage = 0; // günlük geçmiş sayfası
+const HIST_PER = 7;
+
+// 3 hanede bir virgül: 1300000 -> 1,300,000
+function fmt(n) {
+  return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+// Kısa gösterim: 1300000000 -> 1b 300m, 2450000 -> 2m 450k, 12500 -> 12k 500
+function fmtShort(n) {
+  n = Math.round(n);
+  if (n < 0) return '-' + fmtShort(-n);
+  if (n < 1000) return String(n);
+  const units = [['t', 1e12], ['b', 1e9], ['m', 1e6], ['k', 1e3]];
+  const parts = [];
+  for (const [suf, div] of units) {
+    if (n >= div) {
+      parts.push(Math.floor(n / div) + suf);
+      n = n % div;
+      if (parts.length === 2) return parts.join(' ');
+    } else if (parts.length) {
+      // ara birim boşsa (örn 1b 500k) atla, iki parçayla sınırlı kal
+      continue;
+    }
+  }
+  if (n > 0 && parts.length < 2) parts.push(String(n));
+  return parts.join(' ');
+}
+
+// "1,300,000" gibi virgüllü metni sayıya çevir
+function parsePrice(s) {
+  return parseFloat(String(s).replace(/,/g, '').replace(/\s/g, ''));
+}
+
+function dayTotal(dateKey) {
+  const rec = A.records[dateKey];
+  if (!rec) return 0;
+  let sum = 0;
+  for (const id in rec) sum += (rec[id].q || 0) * (rec[id].p || 0);
+  return sum;
+}
+
+// Haftanın başı: Pazartesi
+function weekStart(d) {
+  const x = new Date(d);
+  const day = (x.getDay() + 6) % 7; // Pzt=0 ... Paz=6
+  x.setDate(x.getDate() - day);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function calcStats() {
+  const now = new Date();
+  const tKey = todayKey();
+  const ws = weekStart(now);
+  const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  let week = 0, month = 0, total = 0;
+  for (const dateKey in A.records) {
+    const t = dayTotal(dateKey);
+    total += t;
+    const d = new Date(dateKey + 'T00:00:00');
+    if (d >= ws) week += t;
+    if (d >= ms) month += t;
+  }
+  return { today: dayTotal(tKey), week, month, total };
+}
+
+// --- Hedef ---
+
+// Son 30 günde kazanç girilen günlerin ortalaması (oynanmayan günler ortalamayı düşürmesin)
+function avgDailyEarning() {
+  let sum = 0, n = 0;
+  for (let i = 0; i < 30; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = dateKeyOf(d);
+    if (A.farm[key]) continue; // farm günü ortalamaya katılmaz
+    const t = dayTotal(key);
+    if (t > 0) { sum += t; n++; }
+  }
+  return { rate: n ? sum / n : 0, days: n };
+}
+
+// Bugünden itibaren n kazanç günü sonrasının tarihi — hafta içi (Pzt–Cum) oynandığı varsayımıyla
+function weekdayDateAfter(n) {
+  if (n > 1500) return null; // ~6 yıldan uzun tahminler anlamsız
+  const d = new Date();
+  let c = 0;
+  while (c < n) {
+    d.setDate(d.getDate() + 1);
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) c++;
+  }
+  return d;
+}
+
+function renderGoal() {
+  // Listede başarılmamış hedef varsa ilk sıradaki aktif hedeftir ve tutarı buradan gelir;
+  // liste boşsa elle girilen tutar kullanılır.
+  const act = activeGoal();
+  const g = act
+    ? { amount: act.amount, dev: A.goal ? A.goal.dev : 20 }
+    : A.goal;
+  const info = document.getElementById('goalInfo');
+  const barWrap = document.getElementById('goalBarWrap');
+  const amountEl = document.getElementById('goalAmount');
+  const devEl = document.getElementById('goalDev');
+  document.getElementById('goalClear').style.display = (g && !act) ? 'inline-block' : 'none';
+  amountEl.readOnly = !!act;
+  amountEl.style.opacity = act ? 0.7 : 1;
+  amountEl.title = act ? 'Tutar, listedeki ilk hedeften otomatik alınıyor' : '';
+  if (document.activeElement !== amountEl || act) amountEl.value = g ? fmt(g.amount) : '';
+  if (document.activeElement !== devEl) devEl.value = g ? g.dev : (devEl.value || 20);
+
+  const vaultEl = document.getElementById('vaultAmount');
+  const stockEl = document.getElementById('vaultStock');
+  if (document.activeElement !== vaultEl) vaultEl.value = A.vault ? fmt(A.vault.amount) : '';
+  if (document.activeElement !== stockEl) stockEl.value = (A.vault && A.vault.stock) ? fmt(A.vault.stock) : '';
+  document.getElementById('vaultNote').textContent = A.vault
+    ? new Date(A.vault.asof + 'T00:00:00').toLocaleDateString('tr-TR') + ' itibarıyla — satış yaptıkça ikisini birlikte güncelle'
+    : 'boşsa hedefe tüm kazançların sayılır';
+
+  if (!g) {
+    barWrap.style.display = 'none';
+    info.textContent = 'Alttaki listeye fiyatlı bir hedef ekle (ilk sıradaki otomatik aktif olur) ya da tutarı elle girip Kaydet\'e bas.';
+    return;
+  }
+
+  const cur = state.currency || 'Gold';
+  // Kasa girildiyse: ilerleme = kasa + kasa güncellemesinden SONRAKİ günlerin kazancı
+  // (kasa güncellenen gün dahil öncesi "kasaya işlenmiş" sayılır — çifte sayım olmaz).
+  // Kasa yoksa: tüm geçmiş kazanç sayılır.
+  const v = A.vault;
+  let earned = 0, afterVault = 0;
+  for (const dk in A.records) {
+    const t = dayTotal(dk);
+    earned += t;
+    if (v && dk > v.asof) afterVault += t;
+  }
+  if (v) earned = v.amount + (v.stock || 0) + afterVault;
+  const remaining = g.amount - earned;
+  const pct = Math.min(100, earned / g.amount * 100);
+
+  barWrap.style.display = 'block';
+  document.getElementById('goalFill').style.width = pct.toFixed(1) + '%';
+
+  let html = (act ? '🎯 <b>' + esc(act.name) + '</b>: ' : '') +
+    '<b>' + fmtShort(earned) + '</b> / <b>' + fmtShort(g.amount) + ' ' + esc(cur) + '</b>' +
+    ' (<span class="hl">%' + pct.toFixed(1) + '</span>)' +
+    (v ? ' — kasa ' + fmtShort(v.amount) +
+         (v.stock ? ' + satılmamış ' + fmtShort(v.stock) : '') +
+         ' + sonrası kazanç ' + fmtShort(afterVault) + '. '
+       : ' — tüm kazançların dahil. ');
+
+  if (remaining <= 0) {
+    html += '<br>🎉 <span class="hl">Hedefe ulaştın!</span> ' +
+      (act ? 'Listeden "✔ Başardım" ile işaretle — sıradaki hedef otomatik devreye girer.'
+           : 'Yeni hedef için tutarı değiştirip tekrar Kaydet\'e basabilirsin.');
+    info.innerHTML = html;
+    return;
+  }
+
+  const { rate, days } = avgDailyEarning();
+  if (rate <= 0) {
+    html += '<br>Tahmin için henüz veri yok — birkaç gün kazanç girdikçe süre hesaplanacak.';
+    info.innerHTML = html;
+    return;
+  }
+
+  const dev = Math.min(90, Math.max(0, g.dev || 0)) / 100;
+  const mid = Math.ceil(remaining / rate);
+  const lo = Math.ceil(remaining / (rate * (1 + dev)));
+  const hi = Math.ceil(remaining / (rate * (1 - dev)));
+  const dMid = weekdayDateAfter(mid), dLo = weekdayDateAfter(lo), dHi = weekdayDateAfter(hi);
+  const dt = d => d ? d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }) : '—';
+
+  html += 'Kalan: <b>' + fmtShort(remaining) + ' ' + esc(cur) + '</b>.' +
+    '<br>Ortalama günlük kazanç: <b>' + fmtShort(Math.round(rate)) + ' ' + esc(cur) + '</b> (son 30 günde kazanç girilen ' + days + ' günün ortalaması).' +
+    '<br>Tahmin: <span class="hl">~' + fmt(mid) + ' kazanç günü</span> (±%' + g.dev + ' sapmayla ' + fmt(lo) + '–' + fmt(hi) + ' gün).' +
+    '<br>Hafta içi oynamaya devam edersen bitiş: <span class="hl">~' + dt(dMid) + '</span>' +
+    (dLo && dHi ? ' <small>(iyi gidersen ' + dt(dLo) + ', yavaş gidersen ' + dt(dHi) + ')</small>' : '');
+  info.innerHTML = html;
+}
+
+// --- Hedef listesi (başarı arşivi) ---
+
+// İlk sıradaki başarılmamış hedef = aktif hedef; fiyatı üstteki hedef panelini besler
+function activeGoal() {
+  return A.goals.find(gl => !gl.done && gl.amount > 0) || null;
+}
+
+function moveGoal(id, dir) {
+  const openIds = A.goals.filter(gl => !gl.done).map(gl => gl.id);
+  const pos = openIds.indexOf(id);
+  const target = pos + dir;
+  if (pos < 0 || target < 0 || target >= openIds.length) return;
+  const i = A.goals.findIndex(gl => gl.id === id);
+  const j = A.goals.findIndex(gl => gl.id === openIds[target]);
+  [A.goals[i], A.goals[j]] = [A.goals[j], A.goals[i]];
+  save();
+  render();
+}
+
+function renderGoalList() {
+  const openEl = document.getElementById('goalsOpen');
+  const doneEl = document.getElementById('goalsDone');
+  openEl.innerHTML = '';
+  doneEl.innerHTML = '';
+
+  const open = A.goals.filter(gl => !gl.done);
+  const done = A.goals.filter(gl => gl.done).sort((a, b) => b.done.localeCompare(a.done));
+  document.getElementById('goalsDoneTitle').style.display = done.length ? 'block' : 'none';
+
+  if (!open.length && !done.length) {
+    openEl.innerHTML = '<div class="glist-empty">Henüz hedef yok — aklındakini yaz, başarınca işaretle, arşivin biriksin.</div>';
+    return;
+  }
+
+  const act = activeGoal();
+  const cur = state.currency || 'Gold';
+  const mkRow = (gl, orderPos, orderLen) => {
+    const row = document.createElement('div');
+    row.className = 'glist-row' + (gl.done ? ' done' : '');
+
+    if (!gl.done) {
+      const mv = document.createElement('div');
+      mv.className = 'move-btns';
+      const up = document.createElement('button');
+      up.type = 'button'; up.textContent = '▲'; up.title = 'Yukarı taşı';
+      up.disabled = orderPos === 0;
+      up.onclick = () => moveGoal(gl.id, -1);
+      const down = document.createElement('button');
+      down.type = 'button'; down.textContent = '▼'; down.title = 'Aşağı taşı';
+      down.disabled = orderPos === orderLen - 1;
+      down.onclick = () => moveGoal(gl.id, 1);
+      mv.appendChild(up); mv.appendChild(down);
+      row.appendChild(mv);
+    }
+
+    const name = document.createElement('span');
+    name.className = 'g-name';
+    name.textContent = (gl.done ? '✅ ' : (act && act.id === gl.id ? '🎯 ' : '')) + gl.name +
+      (gl.amount ? ' — ' + fmtShort(gl.amount) + ' ' + cur : '');
+    const date = document.createElement('span');
+    date.className = 'g-date';
+    date.textContent = gl.done
+      ? new Date(gl.done + 'T00:00:00').toLocaleDateString('tr-TR') + "'de başarıldı"
+      : new Date(gl.added + 'T00:00:00').toLocaleDateString('tr-TR') + "'de eklendi";
+    row.appendChild(name);
+    row.appendChild(date);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    if (gl.done) {
+      btn.textContent = 'Geri al';
+      btn.onclick = () => { gl.done = null; save(); render(); };
+    } else {
+      btn.className = 'achieve';
+      btn.textContent = '✔ Başardım';
+      btn.onclick = () => { gl.done = todayKey(); save(); render(); };
+    }
+    row.appendChild(btn);
+
+    // Düzenle: ad ve fiyatı silmeden güncelle
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.textContent = '✎';
+    edit.title = 'Adı/fiyatı düzenle';
+    edit.onclick = () => {
+      const yeniAd = prompt('Hedef adı:', gl.name);
+      if (yeniAd === null) return;
+      const yeniFiyat = prompt('Hedef fiyatı:', fmt(gl.amount || 0));
+      if (yeniFiyat === null) return;
+      const p = parsePrice(yeniFiyat);
+      if (yeniAd.trim()) gl.name = yeniAd.trim();
+      if (!isNaN(p) && p > 0) gl.amount = p;
+      save();
+      render();
+    };
+    row.appendChild(edit);
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'g-del';
+    del.textContent = '🗑️';
+    del.title = 'Hedefi sil';
+    del.onclick = () => {
+      if (!confirm('"' + gl.name + '" silinsin mi?')) return;
+      A.goals = A.goals.filter(x => x.id !== gl.id);
+      save();
+      render();
+    };
+    row.appendChild(del);
+    return row;
+  };
+
+  open.forEach((gl, i) => openEl.appendChild(mkRow(gl, i, open.length)));
+  for (const gl of done) doneEl.appendChild(mkRow(gl));
+}
+
+// --- CP (kill puanı) ---
+
+// Kasılan CP = (gün sonu - gün başı) + harcanan
+// Örn: 300 başladın, 100 harcadın, 400 bitirdin -> aslında 200 kastın
+function cpGain(dateKey) {
+  const c = A.cp[dateKey];
+  if (!c) return 0;
+  const net = (c.start != null && c.end != null) ? c.end - c.start : 0;
+  // Kesimden gelen CP = net + harcanan − ekstra (kesim dışı gelen CP çıkarılır)
+  return net + (c.spent || 0) - (c.extra || 0);
+}
+
+function calcCpStats() {
+  const now = new Date();
+  const ws = weekStart(now);
+  const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  let week = 0, month = 0, total = 0;
+  for (const dateKey in A.cp) {
+    const g = cpGain(dateKey);
+    total += g;
+    const d = new Date(dateKey + 'T00:00:00');
+    if (d >= ws) week += g;
+    if (d >= ms) month += g;
+  }
+  return { today: cpGain(todayKey()), week, month, total };
+}
+
+// Yeni gün: dünün "gün sonu" değerini bugünün "gün başı" olarak taşı
+function autoFillCpStart() {
+  const tKey = todayKey();
+  if (A.cp[tKey]) return; // bugüne zaten giriş yapılmış, dokunma
+  const prevDates = Object.keys(A.cp).filter(d => d < tKey).sort().reverse();
+  for (const d of prevDates) {
+    if (A.cp[d].end != null) {
+      A.cp[tKey] = { start: A.cp[d].end, end: null };
+      save();
+      return;
+    }
+  }
+}
+
+// Bugüne kadar toplam kasılan / harcanan CP + güncel CP bakiyesi
+function cpAllTime() {
+  let earned = 0, spent = 0, extra = 0;
+  let latestDate = '', currentCp = null;
+  for (const dk in A.cp) {
+    earned += cpGain(dk); // kesimden gelen (ekstra hariç)
+    spent += (A.cp[dk].spent || 0);
+    extra += (A.cp[dk].extra || 0);
+    if (A.cp[dk].end != null && dk > latestDate) { latestDate = dk; currentCp = A.cp[dk].end; }
+  }
+  return { earned, spent, extra, current: currentCp };
+}
+
+function renderCpTotals() {
+  const el = document.getElementById('cpTotals');
+  if (!el) return;
+  const a = cpAllTime();
+  const box = (cls, label, val) => '<div class="ct ' + cls + '"><div class="l">' + label + '</div><div class="v">' + val + '</div></div>';
+  el.innerHTML =
+    box('earn', 'Kesimden kasılan', fmt(a.earned) + ' CP') +
+    (a.extra ? box('', 'Ekstra (kesim dışı)', fmt(a.extra) + ' CP') : '') +
+    box('spent', 'Bugüne kadar harcanan', fmt(a.spent) + ' CP') +
+    box('now', 'Güncel CP', a.current != null ? fmt(a.current) + ' CP' : '—');
+}
+
+function setCpOn(field, value, dKey) {
+  const n = parsePrice(value);
+  if (!A.cp[dKey]) A.cp[dKey] = { start: null, end: null, spent: null };
+  A.cp[dKey][field] = isNaN(n) ? null : n;
+  cleanCpRec(dKey);
+  save();
+  render();
+}
+function setCp(field, value) { setCpOn(field, value, selectedDate); }
+
+function setCpMult(value) {
+  const dKey = selectedDate;
+  const m = parseFloat(value) || 1;
+  if (!A.cp[dKey]) A.cp[dKey] = { start: null, end: null, spent: null };
+  A.cp[dKey].mult = m;
+  cleanCpRec(dKey);
+  save();
+  render();
+}
+
+function cleanCpRec(dKey) {
+  const r = A.cp[dKey];
+  if (r && r.start == null && r.end == null && r.spent == null && !r.extra && (!r.mult || r.mult === 1)) delete A.cp[dKey];
+}
+
+// Event çarpanından arındırılmış CP (1x bazı) — verim karşılaştırması için
+function cpBaseGain(dateKey) {
+  const c = A.cp[dateKey];
+  const m = (c && c.mult) || 1;
+  return cpGain(dateKey) / m;
+}
+
+// --- Item işlemleri ---
+
+function addItem(name, price, cp) {
+  state.items.push({ id: Date.now().toString(36), name, price, cp: !!cp });
+  save();
+  render();
+}
+
+function toggleCpFlag(id) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  item.cp = !item.cp;
+  save();
+  render();
+}
+
+function togglePinFlag(id) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  item.panel = !item.panel;
+  save();
+  render();
+}
+
+function deleteItem(id) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  if (!confirm('"' + item.name + '" silinsin mi? (Geçmiş kayıtları korunur)')) return;
+  state.items = state.items.filter(i => i.id !== id);
+  save();
+  render();
+}
+
+function setPrice(id, value) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  const p = parsePrice(value);
+  if (isNaN(p) || p < 0) { render(); return; } // geçersizse eski değere dön
+  item.price = p;
+  // Seçili günün kaydındaki fiyatı da güncelle (diğer günler eski fiyatta kalır)
+  const rec = A.records[selectedDate];
+  if (rec && rec[id]) rec[id].p = p;
+  save();
+  render();
+}
+
+function moveItem(id, dir) {
+  const i = state.items.findIndex(x => x.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= state.items.length) return;
+  [state.items[i], state.items[j]] = [state.items[j], state.items[i]];
+  save();
+  render();
+}
+
+function setQtyOn(id, qty, dKey) {
+  qty = Math.max(0, Math.floor(qty) || 0);
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  if (!A.records[dKey]) A.records[dKey] = {};
+  if (qty === 0) {
+    delete A.records[dKey][id];
+    if (Object.keys(A.records[dKey]).length === 0) delete A.records[dKey];
+  } else {
+    const prev = A.records[dKey][id];
+    A.records[dKey][id] = { q: qty, p: prev ? prev.p : item.price, n: item.name, c: item.cp ? 1 : 0 };
+  }
+  save();
+  render();
+}
+function setQty(id, qty) { setQtyOn(id, qty, selectedDate); }
+function getQtyOn(id, dKey) { const rec = A.records[dKey]; return rec && rec[id] ? rec[id].q : 0; }
+function getQty(id) { return getQtyOn(id, selectedDate); }
+
+// Mini panel: bugüne adet arttır/azalt (hangi gün seçili olursa olsun)
+function miniInc(id, delta) {
+  const t = todayKey();
+  setQtyOn(id, getQtyOn(id, t) + delta, t);
+}
+
+let pipWin = null; // açık Picture-in-Picture penceresi
+function renderMini() {
+  // panel açıkken PiP penceresinde, kapalıyken ana belgede
+  const host = pipWin ? pipWin.document.getElementById('miniPanel') : document.getElementById('miniPanel');
+  if (!host) return;
+  const cur = state.currency || 'Gold';
+  const t = todayKey();
+  const rec = A.records[t] || {};
+  let total = 0;
+  let html = '<div class="m-head"><span><b>' + esc(A.name) + '</b> • bugün</span><span id="mClose" style="cursor:pointer">✕</span></div>';
+
+  // CP bloğu — bugünün gün başı / gün sonu ve kasılan
+  const cpRec = A.cp[t] || {};
+  const kasilan = cpGain(t);
+  html += '<div class="m-cp">' +
+    '<div class="m-cprow">⚔️ CP başı <input class="m-cpin" id="mCpStart" inputmode="numeric" value="' + (cpRec.start != null ? cpRec.start : '') + '"></div>' +
+    '<div class="m-cprow">CP sonu <input class="m-cpin" id="mCpEnd" inputmode="numeric" value="' + (cpRec.end != null ? cpRec.end : '') + '"></div>' +
+    '<div class="m-cpkas">Kasılan: <b>' + (kasilan > 0 ? '+' : '') + fmt(kasilan) + ' CP</b></div>' +
+    '</div>';
+  // Panelde göstermek için 📌 işaretli itemler; yoksa CP itemleri; o da yoksa hepsi
+  const pinned = state.items.filter(i => i.panel);
+  const cpList = state.items.filter(i => i.cp);
+  const show = pinned.length ? pinned : (cpList.length ? cpList : state.items);
+  if (!show.length) {
+    html += '<div class="m-empty">Ana listeye item ekle, sonra item satırındaki <b>📌 Panel</b> ile buraya ekle.</div>';
+  } else {
+    for (const item of show) {
+      const q = getQtyOn(item.id, t);
+      total += q * item.price;
+      html += '<div class="m-row">' +
+        '<span class="m-name">' + esc(item.name) + '</span>' +
+        '<button class="m-btn minus" data-dec="' + item.id + '">−</button>' +
+        '<span class="m-qty">' + q + '</span>' +
+        '<button class="m-btn plus" data-inc="' + item.id + '">+</button>' +
+        '</div>';
+    }
+    html += '<div class="m-total">Bugün: ' + fmtShort(total) + ' ' + esc(cur) + '</div>';
+  }
+  host.innerHTML = html;
+  host.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => miniInc(b.dataset.inc, 1));
+  host.querySelectorAll('[data-dec]').forEach(b => b.onclick = () => miniInc(b.dataset.dec, -1));
+  const cpStart = host.querySelector('#mCpStart'), cpEnd = host.querySelector('#mCpEnd');
+  if (cpStart) cpStart.onchange = () => setCpOn('start', cpStart.value, todayKey());
+  if (cpEnd) cpEnd.onchange = () => setCpOn('end', cpEnd.value, todayKey());
+  const cl = host.querySelector('#mClose');
+  if (cl) cl.onclick = () => { if (pipWin) pipWin.close(); };
+}
+
+async function openMiniPanel() {
+  const host = document.getElementById('miniPanel');
+  if (!('documentPictureInPicture' in window)) {
+    alert('Bu özellik Chrome veya Edge tarayıcısında çalışır (güncel sürüm). Firefox desteklemiyor.\n\nDosyayı Chrome/Edge ile aç, tekrar dene.');
+    return;
+  }
+  if (pipWin) { pipWin.focus(); return; }
+  pipWin = await documentPictureInPicture.requestWindow({ width: 300, height: 380 });
+  // stilleri kopyala
+  for (const sheet of document.styleSheets) {
+    try {
+      const css = [...sheet.cssRules].map(r => r.cssText).join('\n');
+      const st = pipWin.document.createElement('style');
+      st.textContent = css;
+      pipWin.document.head.appendChild(st);
+    } catch (e) {}
+  }
+  pipWin.document.body.style.margin = '0';
+  pipWin.document.body.style.background = '#0f1218';
+  host.style.display = 'block';
+  pipWin.document.body.appendChild(host); // paneli PiP penceresine taşı
+  renderMini();
+  pipWin.addEventListener('pagehide', () => {
+    document.querySelector('.container').appendChild(host); // geri al
+    host.style.display = 'none';
+    pipWin = null;
+  });
+}
+
+// --- Render ---
+
+function render() {
+  const cur = state.currency || 'Gold';
+
+  // Özet
+  const s = calcStats();
+  document.getElementById('statToday').textContent = fmtShort(s.today) + ' ' + cur;
+  document.getElementById('statWeek').textContent = fmtShort(s.week) + ' ' + cur;
+  document.getElementById('statMonth').textContent = fmtShort(s.month) + ' ' + cur;
+  document.getElementById('statTotal').textContent = fmtShort(s.total) + ' ' + cur;
+
+  // Günlük ortalama kazanç (son 30 gün, kazanç girilen günler; farm günleri hariç)
+  const avg = avgDailyEarning();
+  document.getElementById('statAvg').textContent = avg.rate > 0 ? fmtShort(Math.round(avg.rate)) + ' ' + cur : '—';
+  document.getElementById('avgNote').textContent = avg.days ? avg.days + ' kazanç günü ort.' : 'veri yok';
+
+  // CP özetleri
+  const c = calcCpStats();
+  const cpTxt = g => g ? (g > 0 ? '+' : '') + fmt(g) + ' CP' : '';
+  document.getElementById('cpStatToday').textContent = cpTxt(c.today);
+  document.getElementById('cpStatWeek').textContent = cpTxt(c.week);
+  document.getElementById('cpStatMonth').textContent = cpTxt(c.month);
+  document.getElementById('cpStatTotal').textContent = cpTxt(c.total);
+
+  // CP paneli (yazma sırasında bozmamak için sadece odak dışındayken doldur)
+  const isPast = selectedDate !== todayKey();
+  const cpRec = A.cp[selectedDate] || {};
+  for (const [elId, field] of [['cpStart', 'start'], ['cpEnd', 'end'], ['cpSpent', 'spent'], ['cpExtra', 'extra']]) {
+    const el = document.getElementById(elId);
+    if (document.activeElement !== el) el.value = cpRec[field] != null ? fmt(cpRec[field]) : '';
+  }
+  const cpMultEl = document.getElementById('cpMult');
+  cpMultEl.value = String(cpRec.mult || 1);
+  cpMultEl.classList.toggle('event-on', (cpRec.mult || 1) > 1);
+
+  const selGain = cpGain(selectedDate);
+  const cpGainEl = document.getElementById('cpGain');
+  // Gün sonu < gün başı → CP düşmüş; harcama girilmemişse uyar ve gereken miktarı hesapla
+  const net = (cpRec.start != null && cpRec.end != null) ? cpRec.end - cpRec.start : null;
+  // CP düşmüş (gün sonu < gün başı) VE kasılan hâlâ 0 veya altındaysa → harcama yetersiz
+  if (net != null && net < 0 && selGain <= 0) {
+    const drop = -net; // düşüşü kapatan minimum
+    if (!cpRec.spent) {
+      cpGainEl.innerHTML = '<span style="color:#f5b942">⚠ CP ' + fmt(drop) + ' düştü (gün sonu &lt; gün başı).</span> ' +
+        'CP harcadıysan <b>Harcanan</b> kutusuna yaz: <b style="color:#f5b942">' + fmt(drop) + ' + o gün kastığın CP</b> ' +
+        '(örn. 500 kastıysan ' + fmt(drop + 500) + '). Sadece ' + fmt(drop) + ' yazarsan kasılan 0 kalır.';
+    } else {
+      cpGainEl.innerHTML = '<span style="color:#f87171">⚠ Kasılan hâlâ 0 (' + fmt(cpRec.spent) + ' harcama sadece ' + fmt(drop) + ' düşüşü karşılıyor).</span> ' +
+        'O gün kastığın CP kadarını <b>' + fmt(drop) + '</b> üstüne ekle — örn. 500 kastıysan Harcanan = <b style="color:#f5b942">' + fmt(drop + 500) + '</b>.';
+    }
+  } else {
+    let gainTxt = '';
+    if (selGain) {
+      gainTxt = (isPast ? 'O gün kasılan: ' : 'Bugün kasılan: ') + (selGain > 0 ? '+' : '') + fmt(selGain) + ' CP';
+      if (cpRec.spent) gainTxt += ' (' + fmt(cpRec.spent) + ' harcandı)';
+      if ((cpRec.mult || 1) > 1) gainTxt += ' • ' + cpRec.mult + 'x event, 1x karşılığı: ' + fmt(Math.round(cpBaseGain(selectedDate)));
+    }
+    cpGainEl.textContent = gainTxt;
+  }
+
+  // Gün seçici durumu
+  const picker = document.getElementById('dayPicker');
+  picker.max = todayKey();
+  if (document.activeElement !== picker) picker.value = selectedDate;
+  document.getElementById('pastWarn').style.display = isPast ? 'block' : 'none';
+  const isFarm = !!A.farm[selectedDate];
+  document.getElementById('farmDay').checked = isFarm;
+  document.body.classList.toggle('farm-day', isFarm);
+  document.getElementById('todayBtn').style.display = isPast ? 'inline-block' : 'none';
+  document.getElementById('dayNext').disabled = !isPast; // bugündeyken ileri gidilemez
+  document.body.classList.toggle('editing-past', isPast);
+
+  // Item listesi
+  const list = document.getElementById('itemList');
+  list.innerHTML = '';
+  document.getElementById('emptyMsg').style.display = state.items.length ? 'none' : 'block';
+
+  state.items.forEach((item, idx) => {
+    const qty = getQty(item.id);
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML =
+      '<div class="move-btns">' +
+        '<button type="button" class="up" title="Yukarı taşı"' + (idx === 0 ? ' disabled' : '') + '>▲</button>' +
+        '<button type="button" class="down" title="Aşağı taşı"' + (idx === state.items.length - 1 ? ' disabled' : '') + '>▼</button>' +
+      '</div>' +
+      '<div class="info">' +
+        '<div class="name">' + esc(item.name) + '</div>' +
+        '<div class="price-line">Birim: <input class="price-edit" type="text" inputmode="numeric" autocomplete="off" value="' + fmt(item.price) + '" title="Birim fiyatı düzenle"> ' + esc(cur) + ' ' +
+        '<span class="cp-badge' + (item.cp ? ' on' : '') + '" title="CP ile elde ediliyorsa işaretle — analize dahil olur">⚔️ CP' + (item.cp ? ' ✓' : '') + '</span> ' +
+        '<span class="pin-badge' + (item.panel ? ' on' : '') + '" title="Oyun panelinde göster">📌 Panel' + (item.panel ? ' ✓' : '') + '</span></div>' +
+      '</div>' +
+      '<div class="qty-controls">' +
+        '<button type="button" class="minus">−</button>' +
+        '<input type="number" min="0" step="1" value="' + qty + '">' +
+        '<button type="button" class="plus">+</button>' +
+      '</div>' +
+      '<div class="earn" title="' + fmt(qty * item.price) + '">' + fmtShort(qty * item.price) + ' ' + esc(cur) + '</div>' +
+      '<button type="button" class="del" title="Itemi sil">🗑️</button>';
+
+    row.querySelector('.minus').onclick = () => setQty(item.id, getQty(item.id) - 1);
+    row.querySelector('.plus').onclick = () => setQty(item.id, getQty(item.id) + 1);
+    row.querySelector('.qty-controls input').onchange = e => setQty(item.id, parseInt(e.target.value, 10));
+    const priceEdit = row.querySelector('.price-edit');
+    priceEdit.addEventListener('input', () => {
+      const digits = priceEdit.value.replace(/\D/g, '');
+      priceEdit.value = digits ? Number(digits).toLocaleString('en-US') : '';
+    });
+    priceEdit.addEventListener('change', () => setPrice(item.id, priceEdit.value));
+    row.querySelector('.cp-badge').onclick = () => toggleCpFlag(item.id);
+    row.querySelector('.pin-badge').onclick = () => togglePinFlag(item.id);
+    row.querySelector('.del').onclick = () => deleteItem(item.id);
+    row.querySelector('.up').onclick = () => moveItem(item.id, -1);
+    row.querySelector('.down').onclick = () => moveItem(item.id, 1);
+    list.appendChild(row);
+  });
+
+  // Geçmiş
+  const hist = document.getElementById('historyList');
+  hist.innerHTML = '';
+  const dates = [...new Set([...Object.keys(A.records), ...Object.keys(A.cp)])].sort().reverse();
+  if (!dates.length) {
+    hist.innerHTML = '<div class="history-row"><span class="date" style="color:var(--muted)">Henüz kayıt yok</span></div>';
+  }
+  const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+  const pageCount = Math.max(1, Math.ceil(dates.length / HIST_PER));
+  if (histPage >= pageCount) histPage = pageCount - 1;
+  if (histPage < 0) histPage = 0;
+  const pageDates = dates.slice(histPage * HIST_PER, (histPage + 1) * HIST_PER);
+  for (const dateKey of pageDates) {
+    const d = new Date(dateKey + 'T00:00:00');
+    const row = document.createElement('div');
+    row.className = 'history-row';
+    const isToday = dateKey === todayKey();
+    const g = cpGain(dateKey);
+    const cpBadge = g ? ' <small style="color:var(--red)">' + (g > 0 ? '+' : '') + fmt(g) + ' CP</small>' : '';
+    row.innerHTML =
+      '<span class="date">' + d.toLocaleDateString('tr-TR') +
+        '<small>' + dayNames[d.getDay()] + (isToday ? ' • bugün' : '') + (A.farm[dateKey] ? ' • 🌾 farm' : '') + '</small></span>' +
+      '<span class="total" title="' + fmt(dayTotal(dateKey)) + '">' + fmtShort(dayTotal(dateKey)) + ' ' + esc(cur) + cpBadge + '</span>';
+
+    const detail = document.createElement('div');
+    detail.className = 'history-detail';
+    const cpRec2 = A.cp[dateKey];
+    if (cpRec2) {
+      let cpLine = (cpRec2.start != null ? fmt(cpRec2.start) : '?') + ' → ' +
+        (cpRec2.end != null ? fmt(cpRec2.end) : '?');
+      if (cpRec2.spent) cpLine += ', harcanan: ' + fmt(cpRec2.spent);
+      if (g) cpLine += ' | kasılan: ' + (g > 0 ? '+' : '') + fmt(g);
+      if (cpRec2.mult > 1) cpLine += ' | ' + cpRec2.mult + 'x event (1x karşılığı: ' + fmt(Math.round(cpBaseGain(dateKey))) + ')';
+      detail.innerHTML += '<div>⚔️ CP: <span>' + cpLine + '</span></div>';
+    }
+    const rec = A.records[dateKey] || {};
+    for (const id in rec) {
+      const r = rec[id];
+      const item = state.items.find(i => i.id === id);
+      const name = (item && item.name) || r.n || '(silinmiş item)';
+      detail.innerHTML += '<div>' + esc(name) + ': <span>' + fmt(r.q) + ' adet × ' + fmt(r.p) +
+        ' = ' + fmtShort(r.q * r.p) + ' ' + esc(cur) + '</span></div>';
+    }
+    row.onclick = () => {
+      detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+    };
+    hist.appendChild(row);
+    hist.appendChild(detail);
+  }
+
+  // Sayfalama
+  const pager = document.getElementById('histPager');
+  pager.innerHTML = '';
+  if (dates.length > HIST_PER) {
+    const prev = document.createElement('button');
+    prev.textContent = '‹ Önceki'; prev.disabled = histPage === 0;
+    prev.onclick = () => { histPage--; render(); };
+    const next = document.createElement('button');
+    next.textContent = 'Sonraki ›'; next.disabled = histPage >= pageCount - 1;
+    next.onclick = () => { histPage++; render(); };
+    const info = document.createElement('span');
+    info.className = 'hist-pinfo';
+    info.textContent = 'Sayfa ' + (histPage + 1) + ' / ' + pageCount + ' (' + dates.length + ' gün)';
+    pager.appendChild(prev); pager.appendChild(info); pager.appendChild(next);
+  }
+
+  renderCharSelect();
+  if (pipWin) renderMini(); // açık mini panel de güncellensin
+  renderCpTotals();
+  renderGoal();
+  renderGoalList();
+  renderAnalysis();
+  renderItemBreakdown();
+}
+
+// Sekmeler
+function setTab(t) {
+  document.getElementById('tabMain').style.display = t === 'main' ? '' : 'none';
+  document.getElementById('tabAnalysis').style.display = t === 'analysis' ? '' : 'none';
+  document.getElementById('tabBtnMain').classList.toggle('active', t === 'main');
+  document.getElementById('tabBtnAnalysis').classList.toggle('active', t === 'analysis');
+  // Grafikler gizliyken genişlik ölçülemez — sekme açılınca yeniden çiz
+  if (t === 'analysis') renderAnalysis();
+}
+document.getElementById('tabBtnMain').onclick = () => setTab('main');
+document.getElementById('tabBtnAnalysis').onclick = () => setTab('analysis');
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ================= ANALİZ =================
+// Renkler koyu zemine göre doğrulandı (CVD ΔE 41.3, kontrast >= 3:1)
+const VIZ = { cp: '#3987e5', item: '#199e70', verim: '#c98500' };
+let analysisMode = 'daily';
+
+function dateKeyOf(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// O gün toplanan, CP ile elde edilen nesne adedi
+function cpItemCount(dateKey) {
+  const rec = A.records[dateKey];
+  if (!rec) return 0;
+  let sum = 0;
+  for (const id in rec) {
+    const item = state.items.find(i => i.id === id);
+    const isCp = item ? !!item.cp : !!rec[id].c;
+    if (isCp) sum += rec[id].q || 0;
+  }
+  return sum;
+}
+
+// O gün CP ile elde edilen nesnelerin toplam DEĞERİ (adet × fiyat) — verim buna göre
+function cpItemValue(dateKey) {
+  const rec = A.records[dateKey];
+  if (!rec) return 0;
+  let sum = 0;
+  for (const id in rec) {
+    const item = state.items.find(i => i.id === id);
+    const isCp = item ? !!item.cp : !!rec[id].c;
+    if (isCp) sum += (rec[id].q || 0) * (rec[id].p || 0);
+  }
+  return sum;
+}
+
+// Günlük: son 14 gün, Haftalık: son 8 hafta (Pzt başlangıçlı)
+function buildSeries(mode) {
+  const out = [];
+  if (mode === 'daily') {
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = dateKeyOf(d);
+      const rec = A.cp[key];
+      out.push({
+        label: d.getDate() + '.' + String(d.getMonth() + 1).padStart(2, '0'),
+        full: d.toLocaleDateString('tr-TR') + ((rec && rec.mult > 1) ? ' · ' + rec.mult + 'x event' : ''),
+        cp: cpGain(key),
+        base: cpBaseGain(key),
+        items: cpItemCount(key),
+        val: cpItemValue(key)
+      });
+    }
+  } else {
+    const ws = weekStart(new Date());
+    for (let i = 7; i >= 0; i--) {
+      const start = new Date(ws);
+      start.setDate(start.getDate() - i * 7);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      let cp = 0, base = 0, items = 0, val = 0;
+      for (let j = 0; j < 7; j++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + j);
+        cp += cpGain(dateKeyOf(d));
+        base += cpBaseGain(dateKeyOf(d));
+        items += cpItemCount(dateKeyOf(d));
+        val += cpItemValue(dateKeyOf(d));
+      }
+      out.push({
+        label: start.getDate() + '.' + String(start.getMonth() + 1).padStart(2, '0'),
+        full: start.toLocaleDateString('tr-TR') + ' – ' + end.toLocaleDateString('tr-TR') + (i === 0 ? ' (bu hafta)' : ''),
+        cp, base, items, val
+      });
+    }
+  }
+  // Verim: 1000 baz CP (1x karşılığı) başına kazanılan Gold DEĞERİ — adet değil değer.
+  // Event çarpanı oranı şişirmesin diye baz CP kullanılır.
+  for (const p of out) p.verim = p.base > 0 ? p.val / p.base * 1000 : null;
+  return out;
+}
+
+function niceCeil(v) {
+  if (v <= 0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  for (const m of [1, 2, 2.5, 5, 10]) if (v <= m * mag) return m * mag;
+  return 10 * mag;
+}
+
+const vizTip = document.getElementById('vizTip');
+function showTip(evt, title, rows) {
+  vizTip.innerHTML = '';
+  const t = document.createElement('div');
+  t.className = 'tip-title';
+  t.textContent = title;
+  vizTip.appendChild(t);
+  for (const [color, label, value] of rows) {
+    const r = document.createElement('div');
+    r.className = 'tip-row';
+    const k = document.createElement('span');
+    k.className = 'tip-key';
+    k.style.background = color;
+    const v = document.createElement('span');
+    v.className = 'tip-val';
+    v.textContent = value;
+    const l = document.createElement('span');
+    l.textContent = label;
+    r.appendChild(k); r.appendChild(v); r.appendChild(l);
+    vizTip.appendChild(r);
+  }
+  vizTip.style.display = 'block';
+  const pad = 14;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  const bw = vizTip.offsetWidth, bh = vizTip.offsetHeight;
+  if (x + bw > innerWidth - 8) x = evt.clientX - bw - pad;
+  if (y + bh > innerHeight - 8) y = evt.clientY - bh - pad;
+  vizTip.style.left = x + 'px';
+  vizTip.style.top = y + 'px';
+}
+function hideTip() { vizTip.style.display = 'none'; }
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+// Ortak iskelet: eksenler, hairline grid, x etiketleri
+function chartFrame(width, data, maxVal, fmtTick) {
+  const H = 190, padL = 46, padR = 10, padT = 16, padB = 24;
+  const plotW = width - padL - padR, plotH = H - padT - padB;
+  const svg = svgEl('svg', { viewBox: '0 0 ' + width + ' ' + H, height: H });
+  const ticks = 4;
+  for (let i = 0; i <= ticks; i++) {
+    const v = maxVal / ticks * i;
+    const y = padT + plotH - plotH * (v / maxVal);
+    svg.appendChild(svgEl('line', { x1: padL, x2: width - padR, y1: y, y2: y, stroke: i === 0 ? '#3a465c' : '#232b3a', 'stroke-width': 1 }));
+    const txt = svgEl('text', { x: padL - 7, y: y + 4, 'text-anchor': 'end', 'font-size': 10, fill: '#8b96a8' });
+    txt.textContent = fmtTick(v);
+    svg.appendChild(txt);
+  }
+  const slotW = plotW / data.length;
+  const labelEvery = Math.ceil(46 / slotW); // etiketler çakışmasın
+  data.forEach((p, i) => {
+    if (i % labelEvery !== 0 && i !== data.length - 1) return;
+    const txt = svgEl('text', { x: padL + slotW * i + slotW / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 10, fill: '#8b96a8' });
+    txt.textContent = p.label;
+    svg.appendChild(txt);
+  });
+  return { svg, padL, padT, plotW, plotH, slotW, H };
+}
+
+// Üstü 4px yuvarlak, tabanı düz bar
+function barPath(x, y, w, h) {
+  const r = Math.min(4, w / 2, h);
+  const bottom = y + h;
+  return 'M' + x + ',' + bottom +
+    ' L' + x + ',' + (y + r) +
+    ' Q' + x + ',' + y + ' ' + (x + r) + ',' + y +
+    ' L' + (x + w - r) + ',' + y +
+    ' Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) +
+    ' L' + (x + w) + ',' + bottom + ' Z';
+}
+
+function renderBarChart(container, data, key, color, unitLabel, tipFmt) {
+  const width = Math.max(320, container.clientWidth - 34);
+  const maxVal = niceCeil(Math.max(1, ...data.map(p => p[key] || 0)));
+  const f = chartFrame(width, data, maxVal, v => fmtShort(v));
+  const maxIdx = data.reduce((bi, p, i) => (p[key] || 0) > (data[bi][key] || 0) ? i : bi, 0);
+
+  data.forEach((p, i) => {
+    const v = p[key] || 0;
+    const barW = Math.min(24, f.slotW - 4);
+    const x = f.padL + f.slotW * i + (f.slotW - barW) / 2;
+    const h = f.plotH * (v / maxVal);
+    const y = f.padT + f.plotH - h;
+    let bar = null;
+    if (v > 0) {
+      bar = svgEl('path', { d: barPath(x, y, barW, h), fill: color });
+      f.svg.appendChild(bar);
+      // Sadece en yüksek değere doğrudan etiket
+      if (i === maxIdx && h > 6) {
+        const txt = svgEl('text', { x: x + barW / 2, y: y - 5, 'text-anchor': 'middle', 'font-size': 10, 'font-weight': 700, fill: '#e8ecf3' });
+        txt.textContent = tipFmt(v);
+        f.svg.appendChild(txt);
+      }
+    }
+    // Geniş hover hedefi: tüm sütun şeridi; üzerine gelinen bar hafif parlar
+    const hit = svgEl('rect', { x: f.padL + f.slotW * i, y: f.padT, width: f.slotW, height: f.plotH, fill: 'transparent' });
+    hit.addEventListener('pointermove', e => {
+      showTip(e, p.full, [[color, unitLabel, tipFmt(v)]]);
+      if (bar) bar.setAttribute('filter', 'brightness(1.25)');
+    });
+    hit.addEventListener('pointerleave', () => {
+      hideTip();
+      if (bar) bar.removeAttribute('filter');
+    });
+    f.svg.appendChild(hit);
+  });
+  container.appendChild(f.svg);
+}
+
+function renderLineChart(container, data, key, color, unitLabel, tipFmt) {
+  const width = Math.max(320, container.clientWidth - 34);
+  const vals = data.map(p => p[key]).filter(v => v != null);
+  const maxVal = niceCeil(Math.max(1, ...vals, 0));
+  const f = chartFrame(width, data, maxVal, v => v % 1 ? v.toFixed(1) : fmt(v));
+  const pts = data.map((p, i) => p[key] == null ? null : {
+    x: f.padL + f.slotW * i + f.slotW / 2,
+    y: f.padT + f.plotH - f.plotH * (p[key] / maxVal),
+    i
+  });
+
+  // Alan yıkaması (%10 opaklık) + 2px çizgi — null'da segment kırılır
+  let seg = [];
+  const flush = () => {
+    if (seg.length > 1) {
+      const dLine = seg.map((pt, j) => (j ? 'L' : 'M') + pt.x + ',' + pt.y).join(' ');
+      const base = f.padT + f.plotH;
+      f.svg.appendChild(svgEl('path', {
+        d: dLine + ' L' + seg[seg.length - 1].x + ',' + base + ' L' + seg[0].x + ',' + base + ' Z',
+        fill: color, opacity: 0.1
+      }));
+      f.svg.appendChild(svgEl('path', { d: dLine, stroke: color, 'stroke-width': 2, fill: 'none', 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+    }
+    seg = [];
+  };
+  for (const pt of pts) { if (pt) seg.push(pt); else flush(); }
+  flush();
+
+  // Noktalar: 2px zemin halkalı, >= 8px
+  for (const pt of pts) {
+    if (!pt) continue;
+    f.svg.appendChild(svgEl('circle', { cx: pt.x, cy: pt.y, r: 4, fill: color, stroke: '#171c26', 'stroke-width': 2 }));
+  }
+
+  data.forEach((p, i) => {
+    const hit = svgEl('rect', { x: f.padL + f.slotW * i, y: f.padT, width: f.slotW, height: f.plotH, fill: 'transparent' });
+    hit.addEventListener('pointermove', e => {
+      const rows = [[color, unitLabel, p[key] == null ? 'CP verisi yok' : tipFmt(p[key])]];
+      // Verim oranının kaynağı: kazanılan değer, nesne adedi, CP
+      if (key === 'verim') {
+        rows.push([VIZ.item, 'değer', fmtShort(p.val) + ' ' + (state.currency || 'Gold')]);
+        rows.push([VIZ.item, 'nesne', fmt(p.items) + ' adet']);
+        rows.push([VIZ.cp, 'kasılan CP', fmt(p.cp)]);
+        if (p.base !== p.cp) rows.push([VIZ.cp, '1x karşılığı CP', fmt(Math.round(p.base))]);
+      }
+      showTip(e, p.full, rows);
+    });
+    hit.addEventListener('pointerleave', hideTip);
+    f.svg.appendChild(hit);
+  });
+  container.appendChild(f.svg);
+}
+
+// Bugüne kadar düşen TÜM itemlerin (CP olsun olmasın) item bazında toplam adet ve değeri
+function renderItemBreakdown() {
+  const host = document.getElementById('itemBreakdown');
+  if (!host) return;
+  const cur = state.currency || 'Gold';
+  const agg = {}; // id -> { name, qty, value }
+  for (const dk in A.records) {
+    for (const id in A.records[dk]) {
+      const r = A.records[dk][id];
+      const item = state.items.find(i => i.id === id);
+      const name = (item && item.name) || r.n || '(silinmiş)';
+      if (!agg[id]) agg[id] = { name, qty: 0, value: 0 };
+      agg[id].qty += r.q || 0;
+      agg[id].value += (r.q || 0) * (r.p || 0);
+    }
+  }
+  const rows = Object.values(agg).filter(x => x.qty > 0).sort((a, b) => b.value - a.value);
+  const grand = rows.reduce((s, x) => s + x.value, 0);
+
+  if (!rows.length) {
+    host.innerHTML = '<div class="analysis-hint">Henüz item girişi yok.</div>';
+    return;
+  }
+
+  let html = '<table class="brk"><tr><th>Item</th><th>Toplam adet</th><th>Toplam değer</th><th>Pay</th></tr>';
+  for (const x of rows) {
+    const pct = grand > 0 ? (x.value / grand * 100) : 0;
+    html += '<tr><td>' + esc(x.name) + '</td><td>' + fmt(x.qty) + '</td><td>' + fmtShort(x.value) + ' ' + esc(cur) +
+      '</td><td><span class="brk-bar"><span style="width:' + pct.toFixed(1) + '%"></span></span>%' + pct.toFixed(0) + '</td></tr>';
+  }
+  html += '<tr class="brk-total"><td>TOPLAM</td><td></td><td>' + fmtShort(grand) + ' ' + esc(cur) + '</td><td></td></tr>';
+  html += '</table>';
+
+  // Kasa karşılaştırması
+  const v = A.vault;
+  if (v) {
+    const holdings = (v.amount || 0) + (v.stock || 0);
+    // Başarılan hedeflere harcanan para = artık varlık (SET/pelerin) — kasadan çıktı ama kaybolmadı
+    const spentGoals = A.goals.filter(g => g.done).reduce((s, g) => s + (g.amount || 0), 0);
+    const accounted = holdings + spentGoals; // hesaba katılan toplam (nakit+mal+alınan hedefler)
+    const diff = grand - accounted;
+    html += '<div class="brk-cmp">' +
+      '<div>Bugüne kadar düşen toplam: <b>' + fmtShort(grand) + ' ' + esc(cur) + '</b></div>' +
+      '<div>Şu anki kasa + satılmamış: <b>' + fmtShort(holdings) + ' ' + esc(cur) + '</b> ' +
+      '<small>(' + fmtShort(v.amount || 0) + ' kasa + ' + fmtShort(v.stock || 0) + ' satılmamış)</small></div>' +
+      (spentGoals ? '<div>Başarılan hedeflere harcanan: <b>' + fmtShort(spentGoals) + ' ' + esc(cur) + '</b> ' +
+        '<small>(alınan SET/pelerin vb. — varlık olarak duruyor)</small></div>' : '') +
+      '<div>Fark (düşen − hesaba katılan): <b style="color:' + (diff >= 0 ? 'var(--red)' : 'var(--green)') + '">' + fmtShort(Math.abs(diff)) + ' ' + esc(cur) + '</b> ' +
+      '<small>' + (diff >= 0 ? 'diğer harcama / kayıt dışı' : 'kasada fazladan var') + '</small></div>' +
+      '</div>';
+  } else {
+    html += '<div class="brk-cmp"><small>Kasa değeri girersen (Hedef panelinde) buradan kasayla karşılaştırma yapılır.</small></div>';
+  }
+  host.innerHTML = html;
+}
+
+function renderAnalysis() {
+  const body = document.getElementById('analysisBody');
+  body.innerHTML = '';
+  document.getElementById('segDaily').classList.toggle('active', analysisMode === 'daily');
+  document.getElementById('segWeekly').classList.toggle('active', analysisMode === 'weekly');
+  document.getElementById('rangeNote').textContent = analysisMode === 'daily' ? 'Son 14 gün' : 'Son 8 hafta';
+
+  const hasCpItems = state.items.some(i => i.cp);
+  const data = buildSeries(analysisMode);
+  const totCp = data.reduce((s, p) => s + p.cp, 0);
+  const totBase = data.reduce((s, p) => s + p.base, 0);
+  const totItems = data.reduce((s, p) => s + p.items, 0);
+  const totVal = data.reduce((s, p) => s + p.val, 0);
+
+  if (!hasCpItems && totItems === 0) {
+    const hint = document.createElement('div');
+    hint.className = 'analysis-hint';
+    hint.innerHTML = 'Analiz için önce CP ile elde edilen nesneleri işaretle:<br>item satırındaki <b style="color:var(--blue)">⚔️ CP</b> rozetine tıklaman yeterli.';
+    body.appendChild(hint);
+    return;
+  }
+
+  // Özet kutuları — verim artık DEĞER bazlı (1.000 baz CP başına Gold)
+  const cur = state.currency || 'Gold';
+  const avgVerim = totBase > 0 ? totVal / totBase * 1000 : null;
+  const best = data.reduce((b, p) => (p.verim != null && (b == null || p.verim > b.verim)) ? p : b, null);
+  const periodWord = analysisMode === 'daily' ? 'gün' : 'hafta';
+  const tiles = document.createElement('div');
+  tiles.className = 'tiles';
+  const tileData = [
+    ['Ortalama verim', avgVerim == null ? '—' : fmtShort(avgVerim), cur + ' / 1.000 CP (1x bazı)'],
+    ['En verimli ' + periodWord, best && best.verim ? best.full.split(' – ')[0] : '—', best && best.verim ? fmtShort(best.verim) + ' ' + cur + ' / 1.000 CP' : 'henüz veri yok'],
+    ['Kasılan CP', fmtShort(totCp), analysisMode === 'daily' ? 'son 14 gün' : 'son 8 hafta'],
+    ['CP ile gelen değer', fmtShort(totVal) + ' ' + cur, fmt(totItems) + ' adet nesne']
+  ];
+  for (const [label, value, note] of tileData) {
+    const t = document.createElement('div');
+    t.className = 'tile';
+    const l = document.createElement('div'); l.className = 't-label'; l.textContent = label;
+    const v = document.createElement('div'); v.className = 't-value'; v.textContent = value;
+    const n = document.createElement('div'); n.className = 't-note'; n.textContent = note;
+    t.appendChild(l); t.appendChild(v); t.appendChild(n);
+    tiles.appendChild(t);
+  }
+  body.appendChild(tiles);
+
+  // Grafikler — tek eksen kuralı: her ölçü kendi kartında (small multiples)
+  const charts = [
+    ['Verim — 1.000 CP başına değer (' + cur + ')', 'verim', VIZ.verim, 'line', v => fmtShort(v) + ' ' + cur + '/1k CP'],
+    ['Kasılan CP', 'cp', VIZ.cp, 'bar', v => fmt(v) + ' CP'],
+    ['CP ile gelen değer (' + cur + ')', 'val', VIZ.item, 'bar', v => fmtShort(v) + ' ' + cur]
+  ];
+  for (const [title, key, color, type, tf] of charts) {
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    const h = document.createElement('h3');
+    const k = document.createElement('span'); k.className = 'key'; k.style.background = color;
+    h.appendChild(k); h.appendChild(document.createTextNode(title));
+    card.appendChild(h);
+    body.appendChild(card); // önce ekle ki clientWidth ölçülebilsin
+    if (type === 'bar') renderBarChart(card, data, key, color, title, tf);
+    else renderLineChart(card, data, key, color, title, tf);
+  }
+
+  // Tablo görünümü (erişilebilirlik: her değer hover olmadan da okunabilir)
+  const det = document.createElement('details');
+  const sum = document.createElement('summary');
+  sum.textContent = 'Tablo görünümü';
+  det.appendChild(sum);
+  const table = document.createElement('table');
+  table.innerHTML = '<tr><th>' + (analysisMode === 'daily' ? 'Gün' : 'Hafta') + '</th><th>Kasılan CP</th><th>1x Bazı</th><th>Nesne</th><th>Değer</th><th>Verim (' + cur + '/1k CP)</th></tr>';
+  for (const p of data) {
+    const tr = document.createElement('tr');
+    for (const val of [p.full, fmt(p.cp), fmt(Math.round(p.base)), fmt(p.items), fmtShort(p.val), p.verim == null ? '—' : fmtShort(p.verim)]) {
+      const td = document.createElement('td');
+      td.textContent = val;
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  det.appendChild(table);
+  body.appendChild(det);
+}
+
+// --- Olaylar ---
+
+// Fiyat kutusuna yazarken 3 hanede bir virgül koy
+const priceInput = document.getElementById('newPrice');
+priceInput.addEventListener('input', () => {
+  const digits = priceInput.value.replace(/\D/g, '');
+  priceInput.value = digits ? Number(digits).toLocaleString('en-US') : '';
+});
+
+document.getElementById('addForm').onsubmit = e => {
+  e.preventDefault();
+  const name = document.getElementById('newName').value.trim();
+  const price = parsePrice(priceInput.value);
+  if (!name || isNaN(price) || price < 0) return;
+  addItem(name, price, document.getElementById('newCp').checked);
+  e.target.reset();
+  document.getElementById('newName').focus();
+};
+
+// Hedef
+const goalAmountEl = document.getElementById('goalAmount');
+goalAmountEl.addEventListener('input', () => {
+  const digits = goalAmountEl.value.replace(/\D/g, '');
+  goalAmountEl.value = digits ? Number(digits).toLocaleString('en-US') : '';
+});
+document.getElementById('goalSave').onclick = () => {
+  const dev = Math.min(90, Math.max(0, parseFloat(document.getElementById('goalDev').value) || 20));
+  const act = activeGoal();
+  let amount;
+  if (act) {
+    amount = act.amount; // tutar listedeki aktif hedeften gelir, burada sadece sapma kaydedilir
+  } else {
+    amount = parsePrice(goalAmountEl.value);
+    if (isNaN(amount) || amount <= 0) return alert('Geçerli bir hedef tutar gir');
+  }
+  A.goal = { amount, dev };
+  save();
+  render();
+};
+// Hedef listesi
+const newGoalPriceEl = document.getElementById('newGoalPrice');
+newGoalPriceEl.addEventListener('input', () => {
+  const digits = newGoalPriceEl.value.replace(/\D/g, '');
+  newGoalPriceEl.value = digits ? Number(digits).toLocaleString('en-US') : '';
+});
+document.getElementById('goalListForm').onsubmit = e => {
+  e.preventDefault();
+  const name = document.getElementById('newGoalName').value.trim();
+  const amount = parsePrice(newGoalPriceEl.value);
+  if (!name || isNaN(amount) || amount <= 0) return;
+  A.goals.push({ id: Date.now().toString(36), name, amount, added: todayKey(), done: null });
+  save();
+  render();
+  e.target.reset();
+};
+
+// Kasa + satılmamış mal: yazarken virgül formatı, çıkınca kaydet.
+// Kasa boş bırakılırsa kasa takibi tamamen kapanır.
+const vaultAmountEl = document.getElementById('vaultAmount');
+const vaultStockEl = document.getElementById('vaultStock');
+function updateVault() {
+  const n = parsePrice(vaultAmountEl.value);
+  const s = parsePrice(vaultStockEl.value);
+  A.vault = isNaN(n) ? null : { amount: n, stock: isNaN(s) ? 0 : s, asof: todayKey() };
+  save();
+  render();
+}
+for (const el of [vaultAmountEl, vaultStockEl]) {
+  el.addEventListener('input', () => {
+    const digits = el.value.replace(/\D/g, '');
+    el.value = digits ? Number(digits).toLocaleString('en-US') : '';
+  });
+  el.addEventListener('change', updateVault);
+}
+
+document.getElementById('goalClear').onclick = () => {
+  if (!confirm('Hedef kaldırılsın mı? (Kazanç verilerine dokunulmaz)')) return;
+  A.goal = null;
+  save();
+  render();
+};
+
+// Analiz: günlük/haftalık geçişi ve pencere boyutu değişince yeniden çiz
+document.getElementById('segDaily').onclick = () => { analysisMode = 'daily'; renderAnalysis(); };
+document.getElementById('segWeekly').onclick = () => { analysisMode = 'weekly'; renderAnalysis(); };
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(renderAnalysis, 150);
+});
+
+// Gün seçici
+document.getElementById('dayPicker').onchange = e => {
+  selectedDate = e.target.value || todayKey();
+  if (selectedDate > todayKey()) selectedDate = todayKey(); // ileri tarih yok
+  render();
+};
+document.getElementById('todayBtn').onclick = () => {
+  selectedDate = todayKey();
+  render();
+};
+
+document.getElementById('miniBtn').onclick = openMiniPanel;
+
+// Yardım penceresi
+const helpModal = document.getElementById('helpModal');
+document.getElementById('helpBtn').onclick = () => { helpModal.style.display = 'flex'; };
+document.getElementById('helpClose').onclick = () => { helpModal.style.display = 'none'; };
+helpModal.onclick = e => { if (e.target === helpModal) helpModal.style.display = 'none'; };
+
+// Hoş geldin bandı — kapatılınca bir daha gösterme
+const welcome = document.getElementById('welcome');
+if (!localStorage.getItem('welcomeKapandi')) welcome.style.display = 'block';
+// --- Güncelleme kontrolü ---
+async function checkUpdate() {
+  if (!UPDATE_URL) return; // adres girilmemişse kapalı
+  try {
+    const res = await fetch(UPDATE_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const info = await res.json();
+    if (!info || typeof info.surum !== 'number') return;
+    if (info.surum > APP_VERSION) {
+      const bar = document.getElementById('updateBar');
+      const not = info.not ? ' — ' + info.not : '';
+      document.getElementById('updateMsg').textContent = (LANG === 'en'
+        ? '🔔 New version available (v' + info.surum + ')' + not
+        : '🔔 Yeni sürüm var (v' + info.surum + ')' + not);
+      const link = document.getElementById('updateLink');
+      link.href = info.url || UPDATE_URL;
+      link.textContent = LANG === 'en' ? '⬇ Download' : '⬇ İndir';
+      bar.style.display = 'flex';
+    }
+  } catch (e) { /* çevrimdışı ya da erişilemedi — sessizce geç */ }
+}
+document.getElementById('updateClose').onclick = () => { document.getElementById('updateBar').style.display = 'none'; };
+
+// Dil değiştir
+document.getElementById('langBtn').onclick = () => {
+  LANG = LANG === 'tr' ? 'en' : 'tr';
+  localStorage.setItem('lang', LANG);
+  applyLang();
+  if (appStarted) render(); // dinamik metinler de güncellensin
+};
+
+document.getElementById('welcomeClose').onclick = () => {
+  welcome.style.display = 'none';
+  localStorage.setItem('welcomeKapandi', '1');
+};
+
+// Bir gün ileri/geri
+function shiftDay(delta) {
+  const d = new Date(selectedDate + 'T00:00:00');
+  d.setDate(d.getDate() + delta);
+  const key = dateKeyOf(d);
+  if (key > todayKey()) return; // ileri tarih yok
+  selectedDate = key;
+  render();
+}
+document.getElementById('dayPrev').onclick = () => shiftDay(-1);
+document.getElementById('dayNext').onclick = () => shiftDay(1);
+
+document.getElementById('farmDay').onchange = e => {
+  if (e.target.checked) A.farm[selectedDate] = true;
+  else delete A.farm[selectedDate];
+  save();
+  render();
+};
+
+// CP kutuları: yazarken virgül formatı, çıkınca kaydet
+for (const [elId, field] of [['cpStart', 'start'], ['cpEnd', 'end'], ['cpSpent', 'spent'], ['cpExtra', 'extra']]) {
+  const el = document.getElementById(elId);
+  el.addEventListener('input', () => {
+    const digits = el.value.replace(/\D/g, '');
+    el.value = digits ? Number(digits).toLocaleString('en-US') : '';
+  });
+  el.addEventListener('change', () => setCp(field, el.value));
+}
+document.getElementById('cpMult').addEventListener('change', e => setCpMult(e.target.value));
+
+const curInput = document.getElementById('currency');
+curInput.value = state.currency || 'Gold';
+curInput.onchange = () => {
+  state.currency = curInput.value.trim() || 'Gold';
+  save();
+  render();
+};
+
+// Yedekleme
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kazanc-takip-yedek-' + todayKey() + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data || !Array.isArray(data.items) || typeof data.records !== 'object') {
+        return alert('Geçersiz yedek dosyası');
+      }
+      if (!confirm('Yedek yüklenecek, mevcut veriler yedekteki verilerle DEĞİŞTİRİLECEK. Devam?')) return;
+      useState(data);
+      save();
+      selectedDate = todayKey();
+      render();
+      alert('Yedek yüklendi ✓');
+    } catch (err) {
+      alert('Dosya okunamadı: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+};
+
+// --- GC Hesaplayıcı ---
+const gcAmountEl = document.getElementById('gcAmount');
+const gcPriceEl = document.getElementById('gcPrice');
+const gcResultEl = document.getElementById('gcResult');
+gcPriceEl.value = localStorage.getItem('gcBirimFiyat') || '';
+function calcGc() {
+  const cur = state.currency || 'Gold';
+  const gc = parsePrice(gcAmountEl.value);
+  const price = parseFloat(String(gcPriceEl.value).replace(',', '.'));
+  localStorage.setItem('gcBirimFiyat', gcPriceEl.value);
+  if (isNaN(gc) || isNaN(price) || gc <= 0 || price <= 0) { gcResultEl.textContent = '—'; return; }
+  const total = gc * price * 1e6; // birim fiyat milyon cinsinden
+  gcResultEl.textContent = fmtShort(total) + ' ' + cur;
+  gcResultEl.title = fmt(total) + ' ' + cur;
+}
+gcAmountEl.addEventListener('input', () => {
+  const d = gcAmountEl.value.replace(/\D/g, '');
+  gcAmountEl.value = d ? Number(d).toLocaleString('en-US') : '';
+  calcGc();
+});
+gcPriceEl.addEventListener('input', calcGc);
+
+document.getElementById('resetBtn').onclick = () => {
+  if (confirm('TÜM karakterler, itemler ve geçmiş silinecek. Emin misin?')) {
+    const id = 'c' + Date.now().toString(36);
+    useState({ items: [], currency: state.currency, activeChar: id, chars: { [id]: blankChar('Karakter 1') } });
+    selectedDate = todayKey();
+    save();
+    render();
+  }
+};
+
+// Gece yarısı geçince sayaçlar otomatik yeni güne geçsin
+let lastDay = todayKey();
+setInterval(() => {
+  if (todayKey() !== lastDay) {
+    if (selectedDate === lastDay) selectedDate = todayKey(); // seçim bugündeyse yeni güne geç
+    lastDay = todayKey();
+    autoFillCpStart();
+    render();
+  }
+}, 30000);
+
+// --- Lisans kilidi / açılış ---
+const lockScreen = document.getElementById('lockScreen');
+const lockPass = document.getElementById('lockPass');
+const lockPass2 = document.getElementById('lockPass2');
+const lockBtn = document.getElementById('lockBtn');
+const lockMsg = document.getElementById('lockMsg');
+const lockErr = document.getElementById('lockErr');
+const lockHint = document.getElementById('lockHint');
+
+lockPass2.style.display = 'none';
+lockPass.type = 'text';
+lockPass.placeholder = 'Lisans anahtarını buraya yapıştır';
+
+let appStarted = false;
+// --- Karakter yönetimi ---
+function renderCharSelect() {
+  const sel = document.getElementById('charSel');
+  if (!sel) return;
+  sel.innerHTML = '';
+  for (const id in state.chars) {
+    const o = document.createElement('option');
+    o.value = id; o.textContent = state.chars[id].name;
+    if (id === state.activeChar) o.selected = true;
+    sel.appendChild(o);
+  }
+  document.getElementById('charDel').style.display = Object.keys(state.chars).length > 1 ? '' : 'none';
+}
+
+function switchChar(id) {
+  if (!state.chars[id]) return;
+  state.activeChar = id;
+  A = state.chars[id];
+  selectedDate = todayKey();
+  save();
+  render();
+}
+
+document.getElementById('charSel').onchange = e => switchChar(e.target.value);
+document.getElementById('charAdd').onclick = () => {
+  const name = prompt('Yeni karakterin adı:');
+  if (!name || !name.trim()) return;
+  const id = 'c' + Date.now().toString(36);
+  state.chars[id] = blankChar(name.trim());
+  switchChar(id);
+};
+document.getElementById('charRename').onclick = () => {
+  const name = prompt('Karakter adı:', A.name);
+  if (!name || !name.trim()) return;
+  A.name = name.trim();
+  save();
+  render();
+};
+document.getElementById('charDel').onclick = () => {
+  if (Object.keys(state.chars).length <= 1) return alert('Son karakter silinemez.');
+  if (!confirm('"' + A.name + '" karakteri ve tüm verileri silinsin mi?')) return;
+  delete state.chars[state.activeChar];
+  const first = Object.keys(state.chars)[0];
+  switchChar(first);
+};
+
+function startApp(info) {
+  if (appStarted) return;
+  appStarted = true;
+  load(); // kullanıcının verisini yükle (state + A ayarlanır)
+  lockScreen.style.display = 'none';
+  document.querySelector('.container').style.display = '';
+  applyLang();
+  checkUpdate();
+  // kalan süreyi başlıkta göster
+  if (info && info.exp) {
+    const lbl = document.getElementById('todayLabel');
+    if (lbl) {
+      if (info.exp >= '9999-01-01') {
+        lbl.textContent = 'Lisans: ♾️ süresiz' + (info.ad ? ' — ' + info.ad : '');
+      } else {
+        const kalan = Math.ceil((new Date(info.exp + 'T23:59:59') - new Date()) / 86400000);
+        lbl.textContent = 'Lisans bitiş: ' + new Date(info.exp + 'T00:00:00').toLocaleDateString('tr-TR') + ' (' + kalan + ' gün)';
+      }
+    }
+  }
+  autoFillCpStart();
+  render();
+}
+
+const REASONS = {
+  format: 'Anahtar geçersiz (format hatalı). Doğru kopyaladığından emin ol.',
+  imza: 'Anahtar geçersiz. Bu uygulamaya ait bir lisans değil.',
+  süre: 'Lisans süresi doldu. Yeni bir anahtar iste.',
+  saat: 'Sistem saati geri alınmış görünüyor. Tarihi düzeltip tekrar dene.'
+};
+
+async function tryKey(lic, fromStore) {
+  const res = await verifyLicense(lic);
+  if (res.ok) {
+    localStorage.setItem(LIC_KEY, lic.trim());
+    startApp(res);
+    return true;
+  }
+  if (!fromStore) lockErr.textContent = REASONS[res.reason] || 'Anahtar doğrulanamadı.';
+  if (res.reason === 'süre') { localStorage.removeItem(LIC_KEY); lockErr.textContent = REASONS.süre; }
+  return false;
+}
+
+lockBtn.onclick = () => { lockErr.textContent = ''; const v = lockPass.value.trim(); if (!v) { lockErr.textContent = 'Lisans anahtarı gir.'; return; } tryKey(v, false); };
+lockPass.addEventListener('keydown', e => { if (e.key === 'Enter') lockBtn.click(); });
+
+(async function boot() {
+  applyLang();
+  lockMsg.textContent = t('lic_msg');
+  lockBtn.textContent = t('lic_btn');
+  lockHint.textContent = t('lic_hint');
+  const saved = localStorage.getItem(LIC_KEY);
+  if (saved) {
+    // kayıtlı lisansla sessizce dene; geçersiz/dolmuşsa giriş ekranı kalsın
+    const ok = await tryKey(saved, true);
+    if (!ok) {
+      const res = await verifyLicense(saved);
+      lockErr.textContent = res.reason === 'süre' ? REASONS.süre : (REASONS[res.reason] || '');
+      lockPass.focus();
+    }
+  } else {
+    lockPass.focus();
+  }
+})();
+</script>
+</body>
+</html>
