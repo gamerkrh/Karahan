@@ -901,6 +901,25 @@
     <button type="button" id="licRenewBtn" data-i18n="lic_renew_btn" style="background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;cursor:pointer">Süreyi Uzat / Yenile</button>
     <div id="licRenewMsg" style="font-size:12px;min-height:16px;margin-top:6px"></div>
   </div>
+
+  <h2 data-i18n="ab_h">🗂️ Otomatik Yedek</h2>
+  <p class="section-hint" data-i18n="ab_hint">Verilerin bu tarayıcıda tutulur; temizlenirse silinir. Bir klasör seç, uygulama düzenli olarak oraya yedek yazsın. Geriye dönük son 3 gün saklanır, eskiler otomatik silinir.</p>
+  <div class="gc-calc">
+    <div class="gc-result" id="abStatus" style="text-align:left;font-size:13px">—</div>
+    <label><span data-i18n="ab_mode_label">Otomatik yedek</span>
+      <select id="abMode">
+        <option value="off" data-i18n="ab_mode_off">Kapalı</option>
+        <option value="open" data-i18n="ab_mode_open">Her açılışta</option>
+        <option value="6h" data-i18n="ab_mode_6h">6 saatte bir</option>
+        <option value="day" data-i18n="ab_mode_day">Günde 1</option>
+      </select>
+    </label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button type="button" id="abPickBtn" data-i18n="ab_pick_btn" style="background:var(--panel2,#1a2030);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-size:13px;cursor:pointer">📁 Yedek klasörü seç</button>
+      <button type="button" id="abNowBtn" data-i18n="ab_now_btn" style="background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer">💾 Şimdi yedekle</button>
+    </div>
+    <div id="abMsg" style="font-size:12px;min-height:16px;margin-top:6px"></div>
+  </div>
   </div><!-- /tabMain -->
 
   <div id="tabAnalysis" style="display:none">
@@ -992,7 +1011,7 @@ const CONTACT = {
 
 // ===== GÜNCELLEME AYARLARI =====
 // Her yeni sürümde APP_VERSION'ı 1 arttır. Buluttaki surum.json'da da aynı sayıyı yükselt.
-const APP_VERSION = 2;
+const APP_VERSION = 3;
 // Buraya kendi GitHub "raw" adresini yaz (surum.json'un bulunduğu link). Boşsa güncelleme kontrolü kapalı.
 // surum.js adresi — jsDelivr aynası (doğru MIME + file:// uyumlu). Boşsa güncelleme kapalı.
 const UPDATE_URL = 'https://cdn.jsdelivr.net/gh/gamerkrh/Karahan@main/surum.js';
@@ -1132,6 +1151,13 @@ const I18N = {
     lic_r_devunreg: 'Bu cihaz bu lisansa kayıtlı değil.',
     lic_panel_h: '🔑 Lisans', lic_panel_hint: 'Lisansının bitiş tarihini burada görürsün. Süreni uzatmak için satıcından aldığın yeni anahtarı yapıştırıp Yenile\'ye bas.',
     lic_new_label: 'Yeni anahtar', lic_new_ph: 'Yeni lisans anahtarını yapıştır', lic_renew_btn: 'Süreyi Uzat / Yenile', lic_renew_ok: 'Lisans güncellendi ✓',
+    ab_h: '🗂️ Otomatik Yedek', ab_hint: 'Verilerin bu tarayıcıda tutulur; temizlenirse silinir. Bir klasör seç, uygulama düzenli olarak oraya yedek yazsın. Geriye dönük son 3 gün saklanır, eskiler otomatik silinir.',
+    ab_mode_label: 'Otomatik yedek', ab_mode_off: 'Kapalı', ab_mode_open: 'Her açılışta', ab_mode_6h: '6 saatte bir', ab_mode_day: 'Günde 1',
+    ab_pick_btn: '📁 Yedek klasörü seç', ab_now_btn: '💾 Şimdi yedekle',
+    ab_no_folder: 'Klasör seçilmedi', ab_folder: 'Klasör', ab_last: 'Son yedek', ab_never: 'henüz yok',
+    ab_ok: 'Yedek alındı ✓', ab_perm: 'Klasör izni gerekiyor — "Yedek klasörü seç"e tıkla.', ab_unsupported: 'Tarayıcın klasöre otomatik yedeği desteklemiyor; alttaki "Yedek indir"i kullan.',
+    ab_reconnect: 'Klasör bağlantısı için "Yedek klasörü seç"e tekrar tıkla.',
+    char_limit: 'Bu lisans en fazla {n} karakter destekliyor. Daha fazlası için satıcınla iletişime geç.',
     ph_cpstart: 'örn: 300', ph_cpend: 'örn: 400', ph_cpspent: 'örn: 100', ph_cpextra: 'örn: 50', ph_gcamount: 'örn: 500', ph_gcprice: 'örn: 14',
     item_del_confirm: 'silinsin mi? (Geçmiş kayıtları korunur)', char_del_confirm: 'karakteri ve tüm verileri silinsin mi?',
     days: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'], locale: 'tr-TR'
@@ -1263,6 +1289,13 @@ const I18N = {
     lic_r_devunreg: 'This device is not registered to this license.',
     lic_panel_h: '🔑 License', lic_panel_hint: 'See your license expiry date here. To extend, paste the new key you got from your seller and press Renew.',
     lic_new_label: 'New key', lic_new_ph: 'Paste your new license key', lic_renew_btn: 'Extend / Renew', lic_renew_ok: 'License updated ✓',
+    ab_h: '🗂️ Auto Backup', ab_hint: 'Your data lives in this browser; if cleared, it is lost. Pick a folder and the app will write backups there regularly. The last 3 days are kept, older ones are auto-deleted.',
+    ab_mode_label: 'Auto backup', ab_mode_off: 'Off', ab_mode_open: 'On each open', ab_mode_6h: 'Every 6 hours', ab_mode_day: 'Once a day',
+    ab_pick_btn: '📁 Pick backup folder', ab_now_btn: '💾 Back up now',
+    ab_no_folder: 'No folder selected', ab_folder: 'Folder', ab_last: 'Last backup', ab_never: 'none yet',
+    ab_ok: 'Backup saved ✓', ab_perm: 'Folder permission needed — click "Pick backup folder".', ab_unsupported: 'Your browser does not support auto backup to a folder; use "Download backup" below.',
+    ab_reconnect: 'Click "Pick backup folder" again to reconnect the folder.',
+    char_limit: 'This license supports at most {n} character(s). Contact your seller for more.',
     ph_cpstart: 'e.g. 300', ph_cpend: 'e.g. 400', ph_cpspent: 'e.g. 100', ph_cpextra: 'e.g. 50', ph_gcamount: 'e.g. 500', ph_gcprice: 'e.g. 14',
     item_del_confirm: 'delete? (Past records are kept)', char_del_confirm: 'character and all its data will be deleted?',
     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], locale: 'en-US'
@@ -1358,7 +1391,7 @@ async function verifyLicense(lic) {
     if (seen && today < seen) return { ok: false, reason: 'saat' };
     if (today > payload.exp) return { ok: false, reason: 'süre', exp: payload.exp };
     localStorage.setItem(SEEN_KEY, today > (seen || '') ? today : seen);
-    return { ok: true, exp: payload.exp, ad: payload.ad || '' };
+    return { ok: true, exp: payload.exp, ad: payload.ad || '', char: payload.char };
   } catch (e) { return { ok: false, reason: 'format' }; }
 }
 
@@ -2769,14 +2802,161 @@ if (_licRenewBtn) _licRenewBtn.onclick = async () => {
 };
 
 // Yedekleme
-document.getElementById('exportBtn').onclick = () => {
+document.getElementById('exportBtn').onclick = () => downloadBackup();
+
+function downloadBackup() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'kazanc-takip-yedek-' + todayKey() + '.json';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+// ===== OTOMATİK YEDEK (File System Access API) =====
+const AB_MODE_KEY = 'kazancOtoYedekMod';   // off|open|6h|day
+const AB_LAST_KEY = 'kazancOtoYedekSon';   // ISO zaman damgası
+const AB_DIRNAME_KEY = 'kazancYedekKlasorAd';
+let backupDirHandle = null;
+let abOpenDone = false; // 'her açılışta' modunda bu oturumda bir kez
+
+function dkey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function backupFilename(dstr) { return 'kazanc-takip-yedek-' + dstr + '.json'; }
+function fsSupported() { return 'showDirectoryPicker' in window; }
+
+// dizin handle'ını IndexedDB'de sakla (localStorage handle tutamaz)
+function idbReq(mode, fn) {
+  return new Promise((resolve, reject) => {
+    const r = indexedDB.open('kazancFS', 1);
+    r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains('h')) r.result.createObjectStore('h'); };
+    r.onsuccess = () => {
+      const db = r.result;
+      const tx = db.transaction('h', mode).objectStore('h');
+      const q = fn(tx);
+      q.onsuccess = () => resolve(q.result);
+      q.onerror = () => reject(q.error);
+    };
+    r.onerror = () => reject(r.error);
+  });
+}
+const idbGet = k => idbReq('readonly', s => s.get(k));
+const idbSet = (k, v) => idbReq('readwrite', s => s.put(v, k));
+
+async function dirPermGranted(prompt) {
+  if (!backupDirHandle) return false;
+  const opts = { mode: 'readwrite' };
+  try {
+    if ((await backupDirHandle.queryPermission(opts)) === 'granted') return true;
+    if (prompt) return (await backupDirHandle.requestPermission(opts)) === 'granted';
+  } catch (e) {}
+  return false;
+}
+
+async function writeBackupToDir() {
+  if (!(await dirPermGranted(false))) return false;
+  const fh = await backupDirHandle.getFileHandle(backupFilename(todayKey()), { create: true });
+  const w = await fh.createWritable();
+  await w.write(JSON.stringify(state, null, 2));
+  await w.close();
+  // son 3 günü tut, eskileri sil
+  const keep = new Set([0, 1, 2].map(n => { const d = new Date(); d.setDate(d.getDate() - n); return backupFilename(dkey(d)); }));
+  try {
+    for await (const [nm] of backupDirHandle.entries()) {
+      if (/^kazanc-takip-yedek-\d{4}-\d{2}-\d{2}\.json$/.test(nm) && !keep.has(nm)) {
+        try { await backupDirHandle.removeEntry(nm); } catch (e) {}
+      }
+    }
+  } catch (e) {}
+  localStorage.setItem(AB_LAST_KEY, new Date().toISOString());
+  return true;
+}
+
+function abDue() {
+  const mode = localStorage.getItem(AB_MODE_KEY) || 'off';
+  if (mode === 'off') return false;
+  const last = localStorage.getItem(AB_LAST_KEY);
+  if (mode === 'open') return !abOpenDone;
+  if (!last) return true;
+  const diff = Date.now() - new Date(last).getTime();
+  if (mode === '6h') return diff >= 6 * 3600 * 1000;
+  if (mode === 'day') return diff >= 24 * 3600 * 1000;
+  return false;
+}
+
+async function runAutoBackup(force) {
+  if (!backupDirHandle) return;
+  if (!force && !abDue()) return;
+  try {
+    const ok = await writeBackupToDir();
+    if (ok) { abOpenDone = true; renderBackupUI(); }
+  } catch (e) {}
+}
+
+function renderBackupUI() {
+  const st = document.getElementById('abStatus');
+  const modeSel = document.getElementById('abMode');
+  if (modeSel) modeSel.value = localStorage.getItem(AB_MODE_KEY) || 'off';
+  if (!st) return;
+  if (!fsSupported()) { st.textContent = t('ab_unsupported'); return; }
+  const name = localStorage.getItem(AB_DIRNAME_KEY);
+  const last = localStorage.getItem(AB_LAST_KEY);
+  const lastTxt = last ? new Date(last).toLocaleString(t('locale')) : t('ab_never');
+  st.innerHTML = '<b>' + t('ab_folder') + ':</b> ' + (name ? esc(name) : t('ab_no_folder')) +
+    ' &nbsp;•&nbsp; <b>' + t('ab_last') + ':</b> ' + lastTxt;
+}
+
+async function loadBackupDir() {
+  if (!fsSupported()) return;
+  try { backupDirHandle = await idbGet('dir') || null; } catch (e) { backupDirHandle = null; }
+}
+
+// UI olayları
+const _abPick = document.getElementById('abPickBtn');
+if (_abPick) _abPick.onclick = async () => {
+  const msg = document.getElementById('abMsg');
+  msg.style.color = 'var(--muted)';
+  if (!fsSupported()) { msg.style.color = 'var(--red)'; msg.textContent = t('ab_unsupported'); return; }
+  try {
+    const h = await window.showDirectoryPicker({ mode: 'readwrite', id: 'kazancYedek' });
+    backupDirHandle = h;
+    await idbSet('dir', h);
+    localStorage.setItem(AB_DIRNAME_KEY, h.name);
+    await dirPermGranted(true);
+    renderBackupUI();
+    const ok = await writeBackupToDir();
+    msg.style.color = ok ? 'var(--accent)' : 'var(--red)';
+    msg.textContent = ok ? t('ab_ok') : t('ab_perm');
+    if (ok) { abOpenDone = true; renderBackupUI(); }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return; // kullanıcı iptal etti
+    msg.style.color = 'var(--red)';
+    msg.textContent = t('ab_unsupported'); // file:// veya izin engeli
+  }
 };
+
+const _abNow = document.getElementById('abNowBtn');
+if (_abNow) _abNow.onclick = async () => {
+  const msg = document.getElementById('abMsg');
+  if (backupDirHandle) {
+    const ok = await dirPermGranted(true) && await writeBackupToDir();
+    msg.style.color = ok ? 'var(--accent)' : 'var(--red)';
+    msg.textContent = ok ? t('ab_ok') : t('ab_reconnect');
+    if (ok) renderBackupUI();
+  } else {
+    downloadBackup(); // klasör yoksa indirmeye düş
+    msg.style.color = 'var(--accent)';
+    msg.textContent = t('ab_ok');
+  }
+};
+
+const _abMode = document.getElementById('abMode');
+if (_abMode) _abMode.onchange = () => {
+  localStorage.setItem(AB_MODE_KEY, _abMode.value);
+  runAutoBackup(false);
+};
+
+// açıkken periyodik kontrol (6h/day modları için)
+setInterval(() => runAutoBackup(false), 30 * 60 * 1000);
 
 document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
 document.getElementById('importFile').onchange = e => {
@@ -2888,6 +3068,11 @@ function switchChar(id) {
 
 document.getElementById('charSel').onchange = e => switchChar(e.target.value);
 document.getElementById('charAdd').onclick = () => {
+  // lisans karakter limiti
+  if (Object.keys(state.chars).length >= licCharLimit) {
+    alert(t('char_limit').replace('{n}', licCharLimit));
+    return;
+  }
   const name = prompt(t('char_prompt_new'));
   if (!name || !name.trim()) return;
   const id = 'c' + Date.now().toString(36);
@@ -2922,6 +3107,8 @@ function startApp(info) {
   renderLicense(info); // başlık + uyarı bandı + lisans paneli
   autoFillCpStart();
   render();
+  // otomatik yedek: kayıtlı klasörü yükle, durumu göster, gerekiyorsa yedek al
+  loadBackupDir().then(() => { renderBackupUI(); runAutoBackup(false); });
 }
 
 // Kayıtlı anahtardan (offline) exp/ad çıkar
@@ -2931,14 +3118,17 @@ function licInfoFromStore() {
   try {
     const [pB] = saved.trim().split('.');
     const payload = JSON.parse(new TextDecoder().decode(unb64u(pB)));
-    return { exp: payload.exp, ad: payload.ad || '' };
+    return { exp: payload.exp, ad: payload.ad || '', char: payload.char };
   } catch (e) { return null; }
 }
 
 // Lisans durumunu üç yerde de gösterir: başlık etiketi, uyarı bandı, Lisans paneli
+let licCharLimit = Infinity; // lisansın izin verdiği karakter sayısı (eski anahtarlarda sınırsız)
 function renderLicense(info) {
   if (!info) info = licInfoFromStore();
+  licCharLimit = (info && info.char && info.char < 99) ? info.char : Infinity; // char yoksa/99 ise sınırsız
   const en = LANG === 'en';
+  const charSuffix = licCharLimit === Infinity ? '' : ' • ' + (en ? licCharLimit + ' char' : licCharLimit + ' karakter');
   const lbl = document.getElementById('todayLabel');
   const licBar = document.getElementById('licBar');
   const licStatus = document.getElementById('licStatus');
@@ -2947,7 +3137,7 @@ function renderLicense(info) {
 
   if (info.exp >= '9999-01-01') { // süresiz
     if (lbl) lbl.textContent = (en ? 'License: ♾️ lifetime' : 'Lisans: ♾️ süresiz') + (info.ad ? ' — ' + info.ad : '');
-    if (licStatus) licStatus.innerHTML = (en ? '♾️ <b>Lifetime license</b>' : '♾️ <b>Süresiz lisans</b>') + (info.ad ? ' — ' + esc(info.ad) : '');
+    if (licStatus) licStatus.innerHTML = (en ? '♾️ <b>Lifetime license</b>' : '♾️ <b>Süresiz lisans</b>') + charSuffix + (info.ad ? ' — ' + esc(info.ad) : '');
     return;
   }
   const kalan = Math.ceil((new Date(info.exp + 'T23:59:59') - new Date()) / 86400000);
@@ -2956,7 +3146,7 @@ function renderLicense(info) {
   if (licStatus) {
     const kalanTxt = kalan <= 0 ? (en ? 'expired' : 'süresi doldu') : (kalan + (en ? ' days left' : ' gün kaldı'));
     const renk = kalan <= 3 ? 'var(--red)' : (kalan <= 10 ? '#f5b942' : 'var(--accent)');
-    licStatus.innerHTML = (en ? 'Ends: ' : 'Bitiş: ') + '<b>' + bitisTxt + '</b> • <b style="color:' + renk + '">' + kalanTxt + '</b>' + (info.ad ? ' — ' + esc(info.ad) : '');
+    licStatus.innerHTML = (en ? 'Ends: ' : 'Bitiş: ') + '<b>' + bitisTxt + '</b> • <b style="color:' + renk + '">' + kalanTxt + '</b>' + charSuffix + (info.ad ? ' — ' + esc(info.ad) : '');
   }
   if (licBar && kalan <= 10) { // son 10 gün: belirgin bant
     const gunTxt = kalan <= 0
