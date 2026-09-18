@@ -610,6 +610,15 @@
   h2 { font-size: 16px; margin-bottom: 4px; color: var(--muted); font-weight: 600; }
   .section-hint { font-size: 12px; color: var(--muted); opacity: .8; margin: 0 0 10px; line-height: 1.5; }
 
+  .lic-bar {
+    display: flex; align-items: center; gap: 10px;
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 14px;
+    font-size: 14px; font-weight: 600;
+  }
+  .lic-bar.warn { background: rgba(245,185,66,0.12); border: 1px solid var(--accent); color: var(--accent); }
+  .lic-bar.danger { background: rgba(248,113,113,0.12); border: 1px solid var(--red); color: var(--red); }
+  .lic-bar .lic-sub { font-weight: normal; color: var(--muted); font-size: 12px; }
+
   .update-bar {
     display: flex; align-items: center; gap: 12px;
     background: rgba(74, 222, 128, 0.1); border: 1px solid var(--green);
@@ -682,32 +691,33 @@
 <div id="lockScreen" style="position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px">
   <div style="max-width:380px;width:100%;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:26px 24px;text-align:center">
     <div style="font-size:38px;margin-bottom:8px">🔒</div>
-    <h1 style="font-size:20px;color:var(--accent);margin-bottom:6px">Kazanç Takip</h1>
-    <p id="lockMsg" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px"></p>
+    <h1 style="font-size:20px;color:var(--accent);margin-bottom:6px" data-i18n="app_title">Kazanç Takip</h1>
+    <p id="lockMsg" data-i18n="lic_msg" style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px"></p>
     <input id="lockPass" type="password" data-i18n-ph="lic_ph" placeholder="Şifre" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-size:15px;margin-bottom:8px">
-    <input id="lockPass2" type="password" placeholder="Şifreyi tekrar gir" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-size:15px;margin-bottom:8px;display:none">
+    <input id="lockPass2" type="password" data-i18n-ph="lic_ph2" placeholder="Şifreyi tekrar gir" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:11px 13px;font-size:15px;margin-bottom:8px;display:none">
     <div id="lockErr" style="font-size:12px;color:var(--red);min-height:16px;margin-bottom:8px"></div>
-    <button id="lockBtn" style="width:100%;background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer">Aç</button>
-    <p id="lockHint" style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5"></p>
+    <button id="lockBtn" data-i18n="lic_btn" style="width:100%;background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:600;cursor:pointer">Etkinleştir</button>
+    <p id="lockHint" data-i18n="lic_hint" style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5"></p>
+    <button type="button" id="langBtnLock" title="Language / Dil" style="margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer">🌐 EN</button>
   </div>
 </div>
 
 <div class="container" style="display:none">
 
   <header>
-    <h1>⚒️ Kazanç Takip <span id="todayLabel" style="font-size:11px;color:var(--muted);font-weight:normal"></span></h1>
+    <h1>⚒️ <span data-i18n="app_title">Kazanç Takip</span> <span id="todayLabel" style="font-size:11px;color:var(--muted);font-weight:normal"></span></h1>
     <div class="day-bar">
-      <button type="button" id="dayPrev" title="Bir gün öncesi">‹</button>
+      <button type="button" id="dayPrev" data-i18n-title="nav_prev" title="Bir gün öncesi">‹</button>
       <label>📆 <input type="date" id="dayPicker"></label>
-      <button type="button" id="dayNext" title="Bir gün sonrası">›</button>
+      <button type="button" id="dayNext" data-i18n-title="nav_next" title="Bir gün sonrası">›</button>
       <button type="button" id="todayBtn" data-i18n="today_btn">Bugüne dön</button>
       <label class="farm-check" title="Bu gün farm günü (PvP yok) — kazanç tahmini ortalamasına katılmaz"><input type="checkbox" id="farmDay"> <span data-i18n="farm_day">🌾 Farm günü</span></label>
     </div>
     <div class="char-box">
-      🧍 <select id="charSel" title="Karakter seç"></select>
-      <button type="button" id="charAdd" title="Yeni karakter ekle">+</button>
-      <button type="button" id="charRename" title="Karakteri yeniden adlandır">✎</button>
-      <button type="button" id="charDel" title="Karakteri sil">🗑️</button>
+      🧍 <select id="charSel" data-i18n-title="char_sel" title="Karakter seç"></select>
+      <button type="button" id="charAdd" data-i18n-title="char_add" title="Yeni karakter ekle">+</button>
+      <button type="button" id="charRename" data-i18n-title="char_rename" title="Karakteri yeniden adlandır">✎</button>
+      <button type="button" id="charDel" data-i18n-title="char_del" title="Karakteri sil">🗑️</button>
     </div>
     <div class="currency-box">
       <span data-i18n="currency_label">Para birimi:</span> <input type="text" id="currency" maxlength="10">
@@ -725,11 +735,12 @@
   <div id="helpModal" class="help-modal" style="display:none">
     <div class="help-box">
       <div class="help-top">
-        <h2>📖 Nasıl Kullanılır?</h2>
+        <h2 data-i18n="help_title">📖 Nasıl Kullanılır?</h2>
         <button type="button" id="helpClose">✕</button>
       </div>
-      <div class="help-body">
+      <div class="help-body" data-i18n="help_body" data-i18n-html>
         <p class="help-intro">Bu uygulama, oyunda kastığın itemlerin ve CP'nin günlük kaydını tutar; kazancını, verimini ve hedeflerini takip eder. Her şey <b>bu tarayıcıda</b> saklanır, internet gerekmez.</p>
+        <p style="background:rgba(248,113,113,.12);border:1px solid var(--red);border-radius:8px;padding:10px 12px;line-height:1.5;margin:4px 0 14px">⚠️ <b>Önemli:</b> Tüm verilerin yalnızca bu tarayıcıda tutulur. Tarayıcının <b>geçmişini/verilerini temizlersen</b> (veya gizli sekmede açarsan) <b>bütün kayıtların silinir</b>. Bu yüzden ara sıra alttaki <b>Yedek indir</b> ile yedek al — özellikle başka bilgisayara geçmeden önce.</p>
 
         <h3>📋 Günlük Takip</h3>
         <ul>
@@ -785,6 +796,8 @@
     </div>
   </div>
 
+  <div id="licBar" class="lic-bar" style="display:none"></div>
+
   <div id="updateBar" class="update-bar" style="display:none">
     <span id="updateMsg"></span>
     <a id="updateLink" href="#" target="_blank" rel="noopener">⬇ İndir</a>
@@ -834,11 +847,11 @@
 
   <div class="cp-panel">
     <span class="cp-title">⚔️ CP</span>
-    <label><span data-i18n="cp_start">Gün başı:</span> <input type="text" inputmode="numeric" id="cpStart" placeholder="örn: 300"></label>
-    <label><span data-i18n="cp_end">Gün sonu:</span> <input type="text" inputmode="numeric" id="cpEnd" placeholder="örn: 400"></label>
-    <label><span data-i18n="cp_spent">Harcanan:</span> <input type="text" inputmode="numeric" id="cpSpent" placeholder="örn: 100"></label>
-    <label title="Kesim dışı yollarla (görev/etkinlik/item) gelen CP — verim istatistiğinden düşülür, kesim verimini bozmaz"><span data-i18n="cp_extra">Ekstra:</span> <input type="text" inputmode="numeric" id="cpExtra" placeholder="örn: 50"></label>
-    <label title="CP event çarpanı — 3x event varken 3x seç, verim hesabı ona göre düzeltilir">Event:
+    <label><span data-i18n="cp_start">Gün başı:</span> <input type="text" inputmode="numeric" id="cpStart" data-i18n-ph="ph_cpstart" placeholder="örn: 300"></label>
+    <label><span data-i18n="cp_end">Gün sonu:</span> <input type="text" inputmode="numeric" id="cpEnd" data-i18n-ph="ph_cpend" placeholder="örn: 400"></label>
+    <label><span data-i18n="cp_spent">Harcanan:</span> <input type="text" inputmode="numeric" id="cpSpent" data-i18n-ph="ph_cpspent" placeholder="örn: 100"></label>
+    <label data-i18n-title="cp_extra_tip" title="Kesim dışı yollarla (görev/etkinlik/item) gelen CP — verim istatistiğinden düşülür, kesim verimini bozmaz"><span data-i18n="cp_extra">Ekstra:</span> <input type="text" inputmode="numeric" id="cpExtra" data-i18n-ph="ph_cpextra" placeholder="örn: 50"></label>
+    <label data-i18n-title="cp_event_tip" title="CP event çarpanı — 3x event varken 3x seç, verim hesabı ona göre düzeltilir"><span data-i18n="cp_event">Event:</span>
       <select id="cpMult">
         <option value="1">1x</option>
         <option value="2">2x</option>
@@ -875,9 +888,18 @@
   <h2 data-i18n="gc_h">💎 GC Hesaplayıcı</h2>
   <p class="section-hint" data-i18n="gc_hint">Elindeki GC'nin kaç para ettiğini hesaplar. GC adedini ve 1 GC'nin kaç milyon olduğunu gir; toplam değeri m/b cinsinden görürsün.</p>
   <div class="gc-calc">
-    <label><span data-i18n="gc_amount">GC adet</span> <input id="gcAmount" type="text" inputmode="numeric" autocomplete="off" placeholder="örn: 500"></label>
-    <label><span data-i18n="gc_price">Birim fiyat</span> <input id="gcPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="örn: 14"> <span class="gc-unit" data-i18n="gc_unit">milyon / GC</span></label>
+    <label><span data-i18n="gc_amount">GC adet</span> <input id="gcAmount" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="ph_gcamount" placeholder="örn: 500"></label>
+    <label><span data-i18n="gc_price">Birim fiyat</span> <input id="gcPrice" type="text" inputmode="decimal" autocomplete="off" data-i18n-ph="ph_gcprice" placeholder="örn: 14"> <span class="gc-unit" data-i18n="gc_unit">milyon / GC</span></label>
     <div class="gc-result" id="gcResult">—</div>
+  </div>
+
+  <h2 data-i18n="lic_panel_h">🔑 Lisans</h2>
+  <p class="section-hint" data-i18n="lic_panel_hint">Lisansının bitiş tarihini burada görürsün. Süreni uzatmak için satıcından aldığın yeni anahtarı yapıştırıp Yenile'ye bas.</p>
+  <div class="gc-calc">
+    <div class="gc-result" id="licStatus" style="text-align:left;font-size:14px">—</div>
+    <label><span data-i18n="lic_new_label">Yeni anahtar</span> <input id="licNewKey" type="text" autocomplete="off" data-i18n-ph="lic_new_ph" placeholder="Yeni lisans anahtarını yapıştır"></label>
+    <button type="button" id="licRenewBtn" data-i18n="lic_renew_btn" style="background:var(--accent);color:#1a1405;border:none;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;cursor:pointer">Süreyi Uzat / Yenile</button>
+    <div id="licRenewMsg" style="font-size:12px;min-height:16px;margin-top:6px"></div>
   </div>
   </div><!-- /tabMain -->
 
@@ -912,7 +934,7 @@
         <button type="submit">+ Ekle</button>
       </form>
       <div class="glist" id="goalsOpen"></div>
-      <div class="glist-done-title" id="goalsDoneTitle" style="display:none">✅ Başarılanlar</div>
+      <div class="glist-done-title" id="goalsDoneTitle" data-i18n="gl_done_title" style="display:none">✅ Başarılanlar</div>
       <div class="glist" id="goalsDone"></div>
     </div>
 
@@ -939,7 +961,7 @@
     <button id="exportBtn" data-i18n="export_btn">💾 Yedek indir</button> &nbsp;•&nbsp;
     <button id="importBtn" data-i18n="import_btn">📂 Yedek yükle</button> &nbsp;•&nbsp;
     <button id="resetBtn" data-i18n="reset_btn">Tüm verileri sıfırla</button>
-    <input type="file" id="importFile" accept=".json" style="display:none">
+    <input type="file" id="importFile" accept=".json,.txt,application/json,text/plain" style="display:none">
     <div id="verInfo" style="margin-top:8px;font-size:11px;color:var(--muted)"></div>
   </footer>
 
@@ -951,13 +973,26 @@
 const KEY = 'kazancTakipV1';        // kullanıcı verisi (kendi bilgisayarında)
 const LIC_KEY = 'kazancLisans';     // kayıtlı lisans anahtarı
 const SEEN_KEY = 'kazancSonGun';    // saat geri alma koruması
+const DEV_KEY = 'kazancCihaz';      // bu cihazın kimliği (cihaz kilidi)
+const ACT_KEY = 'kazancAktif';      // bu cihaz en az bir kez aktive edildi mi
+
+// ===== CİHAZ KİLİDİ (Cloudflare Worker) =====
+// Boş bırakırsan cihaz kilidi kapanır; sadece offline imza kontrolü kalır.
+const WORKER_URL = 'https://lively-hat-da46.dogan-kal.workers.dev';
 
 // Lisansı doğrulayan AÇIK anahtar (gizli değil — üretici ayrı dosyada)
 const LIC_PUB = {"kty":"EC","crv":"P-256","x":"1a40a8Aa9bvyUnykLjB64EGubcyRzs8vTjkYSwpjsrU","y":"Zd1zOMYfwNOI7-aW_hnpyZBFzg8AGvT0Sn1q26NnjQY"};
 
+// Lisans bitince/yaklaşınca kullanıcıya gösterilecek iletişim (yenileme için). Dile göre gösterilir.
+// İstersen ikisine de kendi bilgini yaz (örn: 'WhatsApp: 05xx...' / 'Discord: xxx'). Boş bırakmak için '' yap.
+const CONTACT = {
+  tr: 'Yenilemek için satıcınla iletişime geç.',
+  en: 'Contact your seller to renew.'
+};
+
 // ===== GÜNCELLEME AYARLARI =====
 // Her yeni sürümde APP_VERSION'ı 1 arttır. Buluttaki surum.json'da da aynı sayıyı yükselt.
-const APP_VERSION = 1;
+const APP_VERSION = 2;
 // Buraya kendi GitHub "raw" adresini yaz (surum.json'un bulunduğu link). Boşsa güncelleme kontrolü kapalı.
 // surum.js adresi — jsDelivr aynası (doğru MIME + file:// uyumlu). Boşsa güncelleme kapalı.
 const UPDATE_URL = 'https://cdn.jsdelivr.net/gh/gamerkrh/Karahan@main/surum.js';
@@ -967,9 +1002,57 @@ let state = { items: [], currency: 'Gold', activeChar: '', chars: {} };
 let A = null; // aktif karakterin verisi (records/cp/goals/goal/farm/vault)
 
 // ================= DİL / LANGUAGE =================
-let LANG = localStorage.getItem('lang') || 'tr';
+// Kayıtlı tercih varsa onu kullan; yoksa tarayıcı diline göre (Türkçe → tr, diğerleri → en)
+let LANG = localStorage.getItem('lang') || (/^tr/i.test(navigator.language || '') ? 'tr' : 'en');
 const I18N = {
   tr: {
+    help_title: '📖 Nasıl Kullanılır?',
+    help_body: `
+        <p class="help-intro">Bu uygulama, oyunda kastığın itemlerin ve CP'nin günlük kaydını tutar; kazancını, verimini ve hedeflerini takip eder. Her şey <b>bu tarayıcıda</b> saklanır, internet gerekmez.</p>
+        <p style="background:rgba(248,113,113,.12);border:1px solid var(--red);border-radius:8px;padding:10px 12px;line-height:1.5;margin:4px 0 14px">⚠️ <b>Önemli:</b> Tüm verilerin yalnızca bu tarayıcıda tutulur. Tarayıcının <b>geçmişini/verilerini temizlersen</b> (veya gizli sekmede açarsan) <b>bütün kayıtların silinir</b>. Bu yüzden ara sıra alttaki <b>Yedek indir</b> ile yedek al — özellikle başka bilgisayara geçmeden önce.</p>
+        <h3>📋 Günlük Takip</h3>
+        <ul>
+          <li><b>Item ekle:</b> Üstteki forma item adını ve birim fiyatını yaz, <b>+ Ekle</b>. Bir kez eklersin, her gün sadece adedini değiştirirsin.</li>
+          <li><b>Adet gir:</b> Item satırındaki <b>− / +</b> ile ya da kutuya sayı yazarak. Kazanç anında hesaplanır.</li>
+          <li><b>⚔️ CP:</b> Item CP karşılığı elde ediliyorsa işaretle — analize dahil olur.</li>
+          <li><b>📌 Panel:</b> Bu item'i "Oyun Paneli"nde göster (aşağıda).</li>
+          <li><b>Birim fiyat</b> değişince satırdaki mavi kutudan güncelle; geçmiş günler o günkü fiyattan kalır.</li>
+        </ul>
+        <h3>⚔️ CP (Kill Puanı)</h3>
+        <ul>
+          <li><b>Gün başı / Gün sonu:</b> Günün başındaki ve sonundaki CP'ni yaz. Fark = o gün kastığın CP.</li>
+          <li><b>Harcanan:</b> Gün içinde CP harcadıysan (CP azaldıysa) buraya yaz, yoksa kasılan eksik/eksi görünür.</li>
+          <li><b>Ekstra:</b> Kesim dışı (görev/etkinlik) gelen CP — verimi bozmasın diye hesaptan düşülür.</li>
+          <li><b>Event:</b> 3x/4x etkinlik varsa seç; verim ona göre düzeltilir.</li>
+        </ul>
+        <h3>📆 Gün Seçimi & 🌾 Farm Günü</h3>
+        <ul>
+          <li><b>‹ ›</b> okları veya takvimle geçmiş bir güne git; girişler o güne kaydedilir (sarı uyarı çıkar).</li>
+          <li><b>🌾 Farm günü:</b> PvP yapmadığın günü işaretle — kazanç tahmini ortalamasına katılmaz, ama parası birikime sayılır.</li>
+        </ul>
+        <h3>🧍 Karakterler</h3>
+        <ul>
+          <li>Sağ üstten karakter seç, <b>+</b> ile yeni ekle, <b>✎</b> adlandır, <b>🗑️</b> sil.</li>
+          <li>Item listesi ve para birimi <b>ortak</b>; kazançlar, CP, hedefler her karaktere <b>ayrı</b>.</li>
+        </ul>
+        <h3>🎯 Hedef & Kasa (Analiz sekmesi)</h3>
+        <ul>
+          <li><b>Hedef listesi:</b> Fiyatlı hedefler ekle (SET, pelerin…). İlk sıradaki otomatik "aktif hedef" olur; ✔ ile başardığını işaretle, ✎ ile düzenle.</li>
+          <li><b>💰 Kasa / 📦 Satılmamış:</b> Elindeki nakit ve satamadığın malların değeri. İlerleme ve tahmin buna göre hesaplanır.</li>
+          <li><b>Tahmin:</b> Son 30 günün (farm hariç) ortalamasıyla "kaç günde biter" ve tarih verir.</li>
+        </ul>
+        <h3>📊 Analiz</h3>
+        <ul>
+          <li><b>Verim grafiği:</b> 1.000 CP başına <b>değer</b> (adet değil) — az ama pahalı drop, çok ama ucuzdan daha verimlidir.</li>
+          <li><b>Item dökümü:</b> Bugüne kadar hangi item ne kadar kazandırdı + kasayla karşılaştırma.</li>
+        </ul>
+        <h3>📌 Oyun Paneli & 💎 Araçlar</h3>
+        <ul>
+          <li><b>📌 Oyun Paneli:</b> Oyunun üstünde kalan küçük pencere — alt-tab yapmadan adet ve CP gir. <i>(Chrome/Edge gerekir.)</i> Panelde çıkacak itemleri 📌 ile seçersin.</li>
+          <li><b>💎 GC Hesaplayıcı:</b> GC adedi × birim fiyatı = toplam değeri.</li>
+        </ul>
+        <h3>💾 Yedekleme</h3>
+        <p>Alttan <b>Yedek indir</b> ile tüm verini tek dosyaya kaydet, <b>Yedek yükle</b> ile geri getir. Tarayıcı verisi silinirse diye ara sıra yedek al — özellikle başka bilgisayara geçerken.</p>`,
     help_btn: '❓ Nasıl kullanılır?',
     title_sub_lic: '', tab_main: '📋 Takip', tab_analysis: '🎯 Analiz & Hedef',
     currency_label: 'Para birimi:', today_btn: 'Bugüne dön', farm_day: '🌾 Farm günü',
@@ -993,9 +1076,114 @@ const I18N = {
     welcome_hi: '👋 Hoş geldin!', welcome_lead: '3 adımda başla:',
     welcome_1: 'Aşağıdan itemlerini ekle (ad + fiyat).', welcome_2: 'Oynarken adetleri + ile arttır, CP\'ni gir.', welcome_3: 'Hedef koy, analizden verimini izle.',
     welcome_more: 'Ayrıntı için üstteki ❓ Nasıl kullanılır? butonuna bak.',
-    lic_msg: 'Bu uygulamayı kullanmak için lisans anahtarına ihtiyacın var.', lic_btn: 'Etkinleştir', lic_hint: 'Lisans anahtarını uygulamayı sana veren kişiden al.', lic_ph: 'Lisans anahtarını buraya yapıştır'
+    lic_msg: 'Bu uygulamayı kullanmak için lisans anahtarına ihtiyacın var.', lic_btn: 'Etkinleştir', lic_hint: 'Lisans anahtarını uygulamayı sana veren kişiden al.', lic_ph: 'Lisans anahtarını buraya yapıştır',
+    // dinamik
+    cpt_earned: 'Kesimden kasılan', cpt_extra: 'Ekstra (kesim dışı)', cpt_spent: 'Bugüne kadar harcanan', cpt_now: 'Güncel CP',
+    avg_days: n => n + ' kazanç günü ort.', avg_none: 'veri yok',
+    tbl_day: 'Gün', tbl_week: 'Hafta', tbl_cp: 'Kasılan CP', tbl_base: '1x Bazı', tbl_item: 'Nesne', tbl_value: 'Değer', tbl_eff: 'Verim',
+    an_avg: 'Ortalama verim', an_best_day: 'En verimli gün', an_best_week: 'En verimli hafta', an_cp: 'Kasılan CP', an_val: 'CP ile gelen değer',
+    an_avg_note: 'nesne / 1.000 CP (1x bazı)', an_none: 'henüz veri yok', an_last14: 'son 14 gün', an_last8: 'son 8 hafta', an_items_note: 'adet nesne', an_perk: '/1k CP',
+    ch_eff: 'Verim — 1.000 CP başına değer', ch_cp: 'Kasılan CP', ch_val: 'CP ile gelen değer',
+    an_hint_mark: 'Analiz için önce CP ile elde edilen nesneleri işaretle: item satırındaki ⚔️ CP rozetine tıklaman yeterli.',
+    tblview: 'Tablo görünümü',
+    brk_item: 'Item', brk_qty: 'Toplam adet', brk_val: 'Toplam değer', brk_share: 'Pay', brk_total: 'TOPLAM', brk_none: 'Henüz item girişi yok.',
+    brk_dropped: 'Bugüne kadar düşen toplam:', brk_holdings: 'Şu anki kasa + satılmamış:', brk_spentgoals: 'Başarılan hedeflere harcanan:', brk_diff: 'Fark (düşen − hesaba katılan):',
+    brk_diff_spent: 'diğer harcama / kayıt dışı', brk_diff_extra: 'kasada fazladan var', brk_novault: 'Kasa değeri girersen (Hedef panelinde) buradan kasayla karşılaştırma yapılır.',
+    gl_done: "'de başarıldı", gl_added: "'de eklendi", gl_achieve: '✔ Başardım', gl_undo: 'Geri al', gl_del_confirm: 'silinsin mi?',
+    gl_empty: 'Henüz hedef yok — aklındakini yaz, başarınca işaretle, arşivin biriksin.', gl_done_title: '✅ Başarılanlar',
+    mini_today: 'bugün', mini_total: 'Bugün:', mini_kasilan: 'Kasılan:', mini_empty: 'Ana listeye item ekle, sonra 📌 Panel ile buraya ekle.',
+    day_today: 'bugün', day_farm: 'farm',
+    tt_event: 'x event, 1x karşılığı:', tt_event2: 'x event (1x karşılığı:',
+    gl_edit_title: 'Adı/fiyatı düzenle', gl_edit_name: 'Hedef adı:', gl_edit_price: 'Hedef fiyatı:', gl_del_title: 'Hedefi sil',
+    gf_kasa: ' — kasa ', gf_unsold: ' + satılmamış ', gf_after: ' + sonrası kazanç ', gf_allincl: ' — tüm kazançların dahil. ',
+    gf_reached: '🎉 <span class="hl">Hedefe ulaştın!</span> ', gf_mark: 'Listeden "✔ Başardım" ile işaretle — sıradaki hedef otomatik devreye girer.',
+    gf_newgoal: 'Yeni hedef için tutarı değiştirip tekrar Kaydet\'e basabilirsin.',
+    gf_nodata: 'Tahmin için henüz veri yok — birkaç gün kazanç girdikçe süre hesaplanacak.',
+    gf_remaining: 'Kalan: ', gf_avg: 'Ortalama günlük kazanç: ', gf_avg2: ' (son 30 günde kazanç girilen ', gf_avg3: ' günün ortalaması).',
+    gf_est: 'Tahmin: ', gf_estdays: ' kazanç günü', gf_estdev1: ' (±%', gf_estdev2: ' sapmayla ', gf_estdev3: ' gün).',
+    gf_finish: 'Hafta içi oynamaya devam edersen bitiş: ', gf_good: ' (iyi gidersen ', gf_slow: ', yavaş gidersen ',
+    pip_unsupported: 'Bu özellik Chrome veya Edge tarayıcısında çalışır (güncel sürüm). Firefox desteklemiyor.\n\nDosyayı Chrome/Edge ile aç, tekrar dene.',
+    cpg_warn1: '<span style="color:#f5b942">⚠ CP {d} düştü (gün sonu &lt; gün başı).</span> CP harcadıysan <b>Harcanan</b> kutusuna yaz: <b style="color:#f5b942">{d} + o gün kastığın CP</b> (örn. 500 kastıysan {d5}). Sadece {d} yazarsan kasılan 0 kalır.',
+    cpg_warn2: '<span style="color:#f87171">⚠ Kasılan hâlâ 0 ({s} harcama sadece {d} düşüşü karşılıyor).</span> O gün kastığın CP kadarını <b>{d}</b> üstüne ekle — örn. 500 kastıysan Harcanan = <b style="color:#f5b942">{d5}</b>.',
+    cpg_today: 'Bugün kasılan: ', cpg_past: 'O gün kasılan: ', cpg_spent1: ' (', cpg_spent2: ' harcandı)',
+    hist_none: 'Henüz kayıt yok', hist_spent: ', harcanan: ', hist_grinded: ' | kasılan: ', hist_deleted: '(silinmiş item)', hist_qty: ' adet × ',
+    pg_prev: '‹ Önceki', pg_next: 'Sonraki ›', pg_page: 'Sayfa', pg_days: 'gün',
+    tip_nocp: 'CP verisi yok', tip_value: 'değer', tip_item: 'nesne', tip_pcs: ' adet', tip_cp: 'kasılan CP', tip_basecp: '1x karşılığı CP',
+    brk_del2: '(silinmiş)',
+    app_title: 'Kazanç Takip', lic_open: 'Aç', lic_ph2: 'Şifreyi tekrar gir',
+    nav_prev: 'Bir gün öncesi', nav_next: 'Bir gün sonrası',
+    char_sel: 'Karakter seç', char_add: 'Yeni karakter ekle', char_rename: 'Karakteri yeniden adlandır', char_del: 'Karakteri sil',
+    cp_extra_tip: 'Kesim dışı yollarla (görev/etkinlik/item) gelen CP — verim istatistiğinden düşülür, kesim verimini bozmaz',
+    cp_event_tip: 'CP event çarpanı — 3x event varken 3x seç, verim hesabı ona göre düzeltilir',
+    it_up: 'Yukarı taşı', it_down: 'Aşağı taşı', it_unit: 'Birim:', it_unit_edit: 'Birim fiyatı düzenle',
+    it_cp_tip: 'CP ile elde ediliyorsa işaretle — analize dahil olur', it_panel_tip: 'Oyun panelinde göster',
+    goal_auto_tip: 'Tutar, listedeki ilk hedeften otomatik alınıyor', vault_asof: ' itibarıyla — satış yaptıkça ikisini birlikte güncelle', vault_empty: 'boşsa hedefe tüm kazançların sayılır',
+    goal_addhint: 'Alttaki listeye fiyatlı bir hedef ekle (ilk sıradaki otomatik aktif olur) ya da tutarı elle girip Kaydet\'e bas.',
+    an_last14b: 'Son 14 gün', an_last8b: 'Son 8 hafta', period_day: 'gün', period_week: 'hafta',
+    goal_invalid: 'Geçerli bir hedef tutar gir', goal_rm_confirm: 'Hedef kaldırılsın mı? (Kazanç verilerine dokunulmaz)',
+    bk_invalid: 'Geçersiz yedek dosyası', bk_confirm: 'Yedek yüklenecek, mevcut veriler yedekteki verilerle DEĞİŞTİRİLECEK. Devam?', bk_ok: 'Yedek yüklendi ✓', bk_err: 'Dosya okunamadı: ',
+    reset_confirm: 'TÜM karakterler, itemler ve geçmiş silinecek. Emin misin?',
+    char_prompt_new: 'Yeni karakterin adı:', char_prompt_rename: 'Karakter adı:',
+    version: 'Sürüm ', lic_needkey: 'Lisans anahtarı gir.', lic_badkey: 'Anahtar doğrulanamadı.',
+    lic_r_format: 'Anahtar geçersiz (format hatalı). Doğru kopyaladığından emin ol.', lic_r_imza: 'Anahtar geçersiz. Bu uygulamaya ait bir lisans değil.',
+    lic_r_sure: 'Lisans süresi doldu. Yeni bir anahtar iste.', lic_r_saat: 'Sistem saati geri alınmış görünüyor. Tarihi düzeltip tekrar dene.',
+    lic_r_net: 'İlk aktivasyon için internet gerekli. Bağlanıp tekrar dene.',
+    lic_r_devlimit: 'Bu lisans başka bir cihazda kullanılıyor. Tek cihazda çalışır — yardım için satıcına yaz.',
+    lic_r_devunreg: 'Bu cihaz bu lisansa kayıtlı değil.',
+    lic_panel_h: '🔑 Lisans', lic_panel_hint: 'Lisansının bitiş tarihini burada görürsün. Süreni uzatmak için satıcından aldığın yeni anahtarı yapıştırıp Yenile\'ye bas.',
+    lic_new_label: 'Yeni anahtar', lic_new_ph: 'Yeni lisans anahtarını yapıştır', lic_renew_btn: 'Süreyi Uzat / Yenile', lic_renew_ok: 'Lisans güncellendi ✓',
+    ph_cpstart: 'örn: 300', ph_cpend: 'örn: 400', ph_cpspent: 'örn: 100', ph_cpextra: 'örn: 50', ph_gcamount: 'örn: 500', ph_gcprice: 'örn: 14',
+    item_del_confirm: 'silinsin mi? (Geçmiş kayıtları korunur)', char_del_confirm: 'karakteri ve tüm verileri silinsin mi?',
+    days: ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'], locale: 'tr-TR'
   },
   en: {
+    help_title: '📖 How to use?',
+    help_body: `
+        <p class="help-intro">This app keeps a daily log of the items you grind and your CP; it tracks your earnings, efficiency and goals. Everything is stored <b>in this browser</b>, no internet needed.</p>
+        <p style="background:rgba(248,113,113,.12);border:1px solid var(--red);border-radius:8px;padding:10px 12px;line-height:1.5;margin:4px 0 14px">⚠️ <b>Important:</b> All your data lives only in this browser. If you <b>clear the browser's history/data</b> (or open it in incognito mode) <b>all your records are deleted</b>. So take a backup now and then with <b>Download backup</b> below — especially before switching to another computer.</p>
+        <h3>📋 Daily Tracking</h3>
+        <ul>
+          <li><b>Add item:</b> Type the item name and unit price into the top form, then <b>+ Add</b>. You add it once, and each day you just change its quantity.</li>
+          <li><b>Enter quantity:</b> Use <b>− / +</b> on the item row or type a number in the box. Earnings are calculated instantly.</li>
+          <li><b>⚔️ CP:</b> Mark it if the item is obtained via CP — it's then included in analysis.</li>
+          <li><b>📌 Panel:</b> Show this item on the "Game Panel" (below).</li>
+          <li><b>Unit price</b> changes: update it from the blue box on the row; past days keep that day's price.</li>
+        </ul>
+        <h3>⚔️ CP (Kill Points)</h3>
+        <ul>
+          <li><b>Day start / Day end:</b> Enter your CP at the start and end of the day. The difference = the CP you grinded that day.</li>
+          <li><b>Spent:</b> If you spent CP during the day (CP went down), write it here, otherwise grinded shows short/negative.</li>
+          <li><b>Extra:</b> CP gained outside kills (quests/events) — subtracted so it doesn't skew efficiency.</li>
+          <li><b>Event:</b> Pick it if there's a 3x/4x event; efficiency is adjusted accordingly.</li>
+        </ul>
+        <h3>📆 Day Selection & 🌾 Farm Day</h3>
+        <ul>
+          <li>Use the <b>‹ ›</b> arrows or the calendar to go to a past day; entries are saved to that day (a yellow warning appears).</li>
+          <li><b>🌾 Farm day:</b> Mark a day you don't do PvP — it's excluded from the earnings-forecast average, but its money still counts toward savings.</li>
+        </ul>
+        <h3>🧍 Characters</h3>
+        <ul>
+          <li>Pick a character at the top right, add one with <b>+</b>, rename with <b>✎</b>, delete with <b>🗑️</b>.</li>
+          <li>The item list and currency are <b>shared</b>; earnings, CP and goals are <b>separate</b> per character.</li>
+        </ul>
+        <h3>🎯 Goals & Vault (Analysis tab)</h3>
+        <ul>
+          <li><b>Goal list:</b> Add priced goals (SET, cape…). The first one automatically becomes the "active goal"; mark it done with ✔, edit with ✎.</li>
+          <li><b>💰 Vault / 📦 Unsold:</b> Your cash on hand and the value of goods you couldn't sell. Progress and the estimate are based on these.</li>
+          <li><b>Estimate:</b> Uses the last 30 days' average (excluding farm) to give "how many days left" and a date.</li>
+        </ul>
+        <h3>📊 Analysis</h3>
+        <ul>
+          <li><b>Efficiency chart:</b> <b>value</b> per 1,000 CP (not count) — a rare but expensive drop is more efficient than many cheap ones.</li>
+          <li><b>Item breakdown:</b> How much each item has earned so far + comparison with the vault.</li>
+        </ul>
+        <h3>📌 Game Panel & 💎 Tools</h3>
+        <ul>
+          <li><b>📌 Game Panel:</b> A small window that stays on top of the game — enter quantity and CP without alt-tabbing. <i>(Requires Chrome/Edge.)</i> Pick the items to show on the panel with 📌.</li>
+          <li><b>💎 GC Calculator:</b> GC count × unit price = total value.</li>
+        </ul>
+        <h3>💾 Backup</h3>
+        <p>Use <b>Download backup</b> at the bottom to save all your data to a single file, and <b>Load backup</b> to restore it. Take a backup now and then in case browser data is cleared — especially when moving to another computer.</p>`,
     help_btn: '❓ How to use?',
     title_sub_lic: '', tab_main: '📋 Tracking', tab_analysis: '🎯 Analysis & Goals',
     currency_label: 'Currency:', today_btn: 'Back to today', farm_day: '🌾 Farm day',
@@ -1019,7 +1207,65 @@ const I18N = {
     welcome_hi: '👋 Welcome!', welcome_lead: 'Start in 3 steps:',
     welcome_1: 'Add your items below (name + price).', welcome_2: 'While playing, raise counts with +, enter your CP.', welcome_3: 'Set a goal, watch efficiency in Analysis.',
     welcome_more: 'For details, see the ❓ How to use? button above.',
-    lic_msg: 'You need a license key to use this app.', lic_btn: 'Activate', lic_hint: 'Get the license key from whoever gave you the app.', lic_ph: 'Paste your license key here'
+    lic_msg: 'You need a license key to use this app.', lic_btn: 'Activate', lic_hint: 'Get the license key from whoever gave you the app.', lic_ph: 'Paste your license key here',
+    // dynamic
+    cpt_earned: 'Grinded (from kills)', cpt_extra: 'Extra (non-kill)', cpt_spent: 'Spent so far', cpt_now: 'Current CP',
+    avg_days: n => n + ' earning-day avg', avg_none: 'no data',
+    tbl_day: 'Day', tbl_week: 'Week', tbl_cp: 'Grinded CP', tbl_base: '1x Base', tbl_item: 'Items', tbl_value: 'Value', tbl_eff: 'Efficiency',
+    an_avg: 'Average efficiency', an_best_day: 'Best day', an_best_week: 'Best week', an_cp: 'Grinded CP', an_val: 'Value via CP',
+    an_avg_note: 'items / 1,000 CP (1x base)', an_none: 'no data yet', an_last14: 'last 14 days', an_last8: 'last 8 weeks', an_items_note: 'items total', an_perk: '/1k CP',
+    ch_eff: 'Efficiency — value per 1,000 CP', ch_cp: 'Grinded CP', ch_val: 'Value via CP',
+    an_hint_mark: 'To analyze, first mark CP-obtained items: just click the ⚔️ CP badge on an item row.',
+    tblview: 'Table view',
+    brk_item: 'Item', brk_qty: 'Total qty', brk_val: 'Total value', brk_share: 'Share', brk_total: 'TOTAL', brk_none: 'No item entries yet.',
+    brk_dropped: 'Total dropped so far:', brk_holdings: 'Current vault + unsold:', brk_spentgoals: 'Spent on completed goals:', brk_diff: 'Difference (dropped − accounted):',
+    brk_diff_spent: 'other spending / untracked', brk_diff_extra: 'extra in vault', brk_novault: 'If you set a vault value (in the Goal panel), it will be compared with your vault here.',
+    gl_done: ' — achieved', gl_added: ' — added', gl_achieve: '✔ Done', gl_undo: 'Undo', gl_del_confirm: 'delete?',
+    gl_empty: 'No goals yet — write one, mark it when done, build your archive.', gl_done_title: '✅ Completed',
+    mini_today: 'today', mini_total: 'Today:', mini_kasilan: 'Grinded:', mini_empty: 'Add items to the main list, then use 📌 Panel to add them here.',
+    day_today: 'today', day_farm: 'farm',
+    tt_event: 'x event, 1x base:', tt_event2: 'x event (1x base:',
+    gl_edit_title: 'Edit name/price', gl_edit_name: 'Goal name:', gl_edit_price: 'Goal price:', gl_del_title: 'Delete goal',
+    gf_kasa: ' — vault ', gf_unsold: ' + unsold ', gf_after: ' + earnings after ', gf_allincl: ' — all earnings included. ',
+    gf_reached: '🎉 <span class="hl">Goal reached!</span> ', gf_mark: 'Mark it with "✔ Done" in the list — the next goal activates automatically.',
+    gf_newgoal: 'For a new goal, change the amount and press Save again.',
+    gf_nodata: 'No data yet for an estimate — enter earnings for a few days and the duration will be calculated.',
+    gf_remaining: 'Remaining: ', gf_avg: 'Average daily earning: ', gf_avg2: ' (average of ', gf_avg3: ' earning-days in the last 30).',
+    gf_est: 'Estimate: ', gf_estdays: ' earning days', gf_estdev1: ' (', gf_estdev2: '% deviation → ', gf_estdev3: ' days).',
+    gf_finish: 'If you keep playing on weekdays, finish: ', gf_good: ' (best case ', gf_slow: ', slow case ',
+    pip_unsupported: 'This feature works in Chrome or Edge (latest version). Firefox is not supported.\n\nOpen the file in Chrome/Edge and try again.',
+    cpg_warn1: '<span style="color:#f5b942">⚠ CP dropped by {d} (day end &lt; day start).</span> If you spent CP, write it in the <b>Spent</b> box: <b style="color:#f5b942">{d} + the CP you grinded that day</b> (e.g. if you grinded 500, {d5}). If you write only {d}, grinded stays 0.',
+    cpg_warn2: '<span style="color:#f87171">⚠ Grinded is still 0 ({s} spent only covers the {d} drop).</span> Add the CP you grinded that day on top of <b>{d}</b> — e.g. if you grinded 500, Spent = <b style="color:#f5b942">{d5}</b>.',
+    cpg_today: 'Grinded today: ', cpg_past: 'Grinded that day: ', cpg_spent1: ' (', cpg_spent2: ' spent)',
+    hist_none: 'No records yet', hist_spent: ', spent: ', hist_grinded: ' | grinded: ', hist_deleted: '(deleted item)', hist_qty: ' × ',
+    pg_prev: '‹ Prev', pg_next: 'Next ›', pg_page: 'Page', pg_days: 'days',
+    tip_nocp: 'No CP data', tip_value: 'value', tip_item: 'items', tip_pcs: ' pcs', tip_cp: 'grinded CP', tip_basecp: '1x base CP',
+    brk_del2: '(deleted)',
+    app_title: 'Earnings Tracker', lic_open: 'Open', lic_ph2: 'Re-enter password',
+    nav_prev: 'Previous day', nav_next: 'Next day',
+    char_sel: 'Select character', char_add: 'Add new character', char_rename: 'Rename character', char_del: 'Delete character',
+    cp_extra_tip: 'CP gained outside kills (quests/events/items) — subtracted from efficiency stats so it doesn\'t skew kill efficiency',
+    cp_event_tip: 'CP event multiplier — pick 3x during a 3x event, efficiency is adjusted accordingly',
+    it_up: 'Move up', it_down: 'Move down', it_unit: 'Unit:', it_unit_edit: 'Edit unit price',
+    it_cp_tip: 'Mark if obtained via CP — it will be included in analysis', it_panel_tip: 'Show on the game panel',
+    goal_auto_tip: 'Amount is taken automatically from the first goal in the list', vault_asof: ' — update both together as you sell', vault_empty: 'if empty, all your earnings count toward the goal',
+    goal_addhint: 'Add a priced goal to the list below (the first one auto-activates) or enter the amount manually and press Save.',
+    an_last14b: 'Last 14 days', an_last8b: 'Last 8 weeks', period_day: 'day', period_week: 'week',
+    goal_invalid: 'Enter a valid goal amount', goal_rm_confirm: 'Remove goal? (Earnings data is untouched)',
+    bk_invalid: 'Invalid backup file', bk_confirm: 'The backup will be loaded and current data will be REPLACED with the backup data. Continue?', bk_ok: 'Backup loaded ✓', bk_err: 'Could not read file: ',
+    reset_confirm: 'ALL characters, items and history will be deleted. Are you sure?',
+    char_prompt_new: 'New character name:', char_prompt_rename: 'Character name:',
+    version: 'Version ', lic_needkey: 'Enter a license key.', lic_badkey: 'Key could not be verified.',
+    lic_r_format: 'Invalid key (bad format). Make sure you copied it correctly.', lic_r_imza: 'Invalid key. This is not a license for this app.',
+    lic_r_sure: 'License has expired. Request a new key.', lic_r_saat: 'System clock appears to have been set back. Fix the date and try again.',
+    lic_r_net: 'Internet is required for first activation. Connect and try again.',
+    lic_r_devlimit: 'This license is already in use on another device. It works on one device only — contact your seller for help.',
+    lic_r_devunreg: 'This device is not registered to this license.',
+    lic_panel_h: '🔑 License', lic_panel_hint: 'See your license expiry date here. To extend, paste the new key you got from your seller and press Renew.',
+    lic_new_label: 'New key', lic_new_ph: 'Paste your new license key', lic_renew_btn: 'Extend / Renew', lic_renew_ok: 'License updated ✓',
+    ph_cpstart: 'e.g. 300', ph_cpend: 'e.g. 400', ph_cpspent: 'e.g. 100', ph_cpextra: 'e.g. 50', ph_gcamount: 'e.g. 500', ph_gcprice: 'e.g. 14',
+    item_del_confirm: 'delete? (Past records are kept)', char_del_confirm: 'character and all its data will be deleted?',
+    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], locale: 'en-US'
   }
 };
 function t(key) { return (I18N[LANG] && I18N[LANG][key]) || (I18N.tr[key] || key); }
@@ -1030,8 +1276,20 @@ function applyLang() {
     if (el.dataset.i18nHtml !== undefined) el.innerHTML = v; else el.textContent = v;
   });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  const lbLabel = LANG === 'tr' ? '🌐 EN' : '🌐 TR';
   const lb = document.getElementById('langBtn');
-  if (lb) lb.textContent = LANG === 'tr' ? '🌐 EN' : '🌐 TR';
+  if (lb) lb.textContent = lbLabel;
+  const lbLock = document.getElementById('langBtnLock');
+  if (lbLock) lbLock.textContent = lbLabel;
+}
+
+// İki dil butonu da (kilit ekranı + uygulama) bunu kullanır
+function toggleLang() {
+  LANG = LANG === 'tr' ? 'en' : 'tr';
+  localStorage.setItem('lang', LANG);
+  applyLang();
+  if (typeof appStarted !== 'undefined' && appStarted) { render(); renderLicense(); }
 }
 
 const unb64u = s => Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
@@ -1087,8 +1345,9 @@ function save() {
 // dönüş: { ok:true, exp, ad } | { ok:false, reason }
 async function verifyLicense(lic) {
   try {
-    const [pB, sB] = lic.trim().split('.');
-    if (!pB || !sB) return { ok: false, reason: 'format' };
+    const parts = lic.trim().split('.');
+    if (parts.length !== 2 || !parts[0] || !parts[1]) return { ok: false, reason: 'format' };
+    const [pB, sB] = parts;
     const pubK = await crypto.subtle.importKey('jwk', LIC_PUB, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
     const valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pubK, unb64u(sB), unb64u(pB));
     if (!valid) return { ok: false, reason: 'imza' };
@@ -1101,6 +1360,34 @@ async function verifyLicense(lic) {
     localStorage.setItem(SEEN_KEY, today > (seen || '') ? today : seen);
     return { ok: true, exp: payload.exp, ad: payload.ad || '' };
   } catch (e) { return { ok: false, reason: 'format' }; }
+}
+
+// Bu cihaza özel, kalıcı kimlik (cihaz kilidi için)
+function deviceId() {
+  let id = localStorage.getItem(DEV_KEY);
+  if (!id) {
+    id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+    localStorage.setItem(DEV_KEY, id);
+  }
+  return id;
+}
+
+// Sunucuya cihazı kilitle/aktive et. Dönüş: {ok, reason?} veya ağ hatasında {ok:false, net:false}
+async function serverActivate(lic) {
+  if (!WORKER_URL) return { ok: true }; // kilit kapalı
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000); // 8 sn'de yanıt yoksa ağ hatası say
+    const url = WORKER_URL + '?action=activate&key=' + encodeURIComponent(lic.trim()) +
+      '&device=' + encodeURIComponent(deviceId());
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    return await r.json();
+  } catch (e) {
+    return { ok: false, net: false };
+  }
 }
 
 function todayKey() {
@@ -1221,7 +1508,7 @@ function renderGoal() {
   document.getElementById('goalClear').style.display = (g && !act) ? 'inline-block' : 'none';
   amountEl.readOnly = !!act;
   amountEl.style.opacity = act ? 0.7 : 1;
-  amountEl.title = act ? 'Tutar, listedeki ilk hedeften otomatik alınıyor' : '';
+  amountEl.title = act ? t('goal_auto_tip') : '';
   if (document.activeElement !== amountEl || act) amountEl.value = g ? fmt(g.amount) : '';
   if (document.activeElement !== devEl) devEl.value = g ? g.dev : (devEl.value || 20);
 
@@ -1230,12 +1517,12 @@ function renderGoal() {
   if (document.activeElement !== vaultEl) vaultEl.value = A.vault ? fmt(A.vault.amount) : '';
   if (document.activeElement !== stockEl) stockEl.value = (A.vault && A.vault.stock) ? fmt(A.vault.stock) : '';
   document.getElementById('vaultNote').textContent = A.vault
-    ? new Date(A.vault.asof + 'T00:00:00').toLocaleDateString('tr-TR') + ' itibarıyla — satış yaptıkça ikisini birlikte güncelle'
-    : 'boşsa hedefe tüm kazançların sayılır';
+    ? new Date(A.vault.asof + 'T00:00:00').toLocaleDateString(t('locale')) + t('vault_asof')
+    : t('vault_empty');
 
   if (!g) {
     barWrap.style.display = 'none';
-    info.textContent = 'Alttaki listeye fiyatlı bir hedef ekle (ilk sıradaki otomatik aktif olur) ya da tutarı elle girip Kaydet\'e bas.';
+    info.textContent = t('goal_addhint');
     return;
   }
 
@@ -1260,22 +1547,21 @@ function renderGoal() {
   let html = (act ? '🎯 <b>' + esc(act.name) + '</b>: ' : '') +
     '<b>' + fmtShort(earned) + '</b> / <b>' + fmtShort(g.amount) + ' ' + esc(cur) + '</b>' +
     ' (<span class="hl">%' + pct.toFixed(1) + '</span>)' +
-    (v ? ' — kasa ' + fmtShort(v.amount) +
-         (v.stock ? ' + satılmamış ' + fmtShort(v.stock) : '') +
-         ' + sonrası kazanç ' + fmtShort(afterVault) + '. '
-       : ' — tüm kazançların dahil. ');
+    (v ? t('gf_kasa') + fmtShort(v.amount) +
+         (v.stock ? t('gf_unsold') + fmtShort(v.stock) : '') +
+         t('gf_after') + fmtShort(afterVault) + '. '
+       : t('gf_allincl'));
 
   if (remaining <= 0) {
-    html += '<br>🎉 <span class="hl">Hedefe ulaştın!</span> ' +
-      (act ? 'Listeden "✔ Başardım" ile işaretle — sıradaki hedef otomatik devreye girer.'
-           : 'Yeni hedef için tutarı değiştirip tekrar Kaydet\'e basabilirsin.');
+    html += '<br>' + t('gf_reached') +
+      (act ? t('gf_mark') : t('gf_newgoal'));
     info.innerHTML = html;
     return;
   }
 
   const { rate, days } = avgDailyEarning();
   if (rate <= 0) {
-    html += '<br>Tahmin için henüz veri yok — birkaç gün kazanç girdikçe süre hesaplanacak.';
+    html += '<br>' + t('gf_nodata');
     info.innerHTML = html;
     return;
   }
@@ -1285,13 +1571,13 @@ function renderGoal() {
   const lo = Math.ceil(remaining / (rate * (1 + dev)));
   const hi = Math.ceil(remaining / (rate * (1 - dev)));
   const dMid = weekdayDateAfter(mid), dLo = weekdayDateAfter(lo), dHi = weekdayDateAfter(hi);
-  const dt = d => d ? d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }) : '—';
+  const dt = d => d ? d.toLocaleDateString(t('locale'), { day: 'numeric', month: 'long' }) : '—';
 
-  html += 'Kalan: <b>' + fmtShort(remaining) + ' ' + esc(cur) + '</b>.' +
-    '<br>Ortalama günlük kazanç: <b>' + fmtShort(Math.round(rate)) + ' ' + esc(cur) + '</b> (son 30 günde kazanç girilen ' + days + ' günün ortalaması).' +
-    '<br>Tahmin: <span class="hl">~' + fmt(mid) + ' kazanç günü</span> (±%' + g.dev + ' sapmayla ' + fmt(lo) + '–' + fmt(hi) + ' gün).' +
-    '<br>Hafta içi oynamaya devam edersen bitiş: <span class="hl">~' + dt(dMid) + '</span>' +
-    (dLo && dHi ? ' <small>(iyi gidersen ' + dt(dLo) + ', yavaş gidersen ' + dt(dHi) + ')</small>' : '');
+  html += t('gf_remaining') + '<b>' + fmtShort(remaining) + ' ' + esc(cur) + '</b>.' +
+    '<br>' + t('gf_avg') + '<b>' + fmtShort(Math.round(rate)) + ' ' + esc(cur) + '</b>' + t('gf_avg2') + days + t('gf_avg3') +
+    '<br>' + t('gf_est') + '<span class="hl">~' + fmt(mid) + t('gf_estdays') + '</span>' + t('gf_estdev1') + g.dev + t('gf_estdev2') + fmt(lo) + '–' + fmt(hi) + t('gf_estdev3') +
+    '<br>' + t('gf_finish') + '<span class="hl">~' + dt(dMid) + '</span>' +
+    (dLo && dHi ? ' <small>' + t('gf_good') + dt(dLo) + t('gf_slow') + dt(dHi) + ')</small>' : '');
   info.innerHTML = html;
 }
 
@@ -1325,7 +1611,7 @@ function renderGoalList() {
   document.getElementById('goalsDoneTitle').style.display = done.length ? 'block' : 'none';
 
   if (!open.length && !done.length) {
-    openEl.innerHTML = '<div class="glist-empty">Henüz hedef yok — aklındakini yaz, başarınca işaretle, arşivin biriksin.</div>';
+    openEl.innerHTML = '<div class="glist-empty">' + t('gl_empty') + '</div>';
     return;
   }
 
@@ -1339,11 +1625,11 @@ function renderGoalList() {
       const mv = document.createElement('div');
       mv.className = 'move-btns';
       const up = document.createElement('button');
-      up.type = 'button'; up.textContent = '▲'; up.title = 'Yukarı taşı';
+      up.type = 'button'; up.textContent = '▲'; up.title = t('it_up');
       up.disabled = orderPos === 0;
       up.onclick = () => moveGoal(gl.id, -1);
       const down = document.createElement('button');
-      down.type = 'button'; down.textContent = '▼'; down.title = 'Aşağı taşı';
+      down.type = 'button'; down.textContent = '▼'; down.title = t('it_down');
       down.disabled = orderPos === orderLen - 1;
       down.onclick = () => moveGoal(gl.id, 1);
       mv.appendChild(up); mv.appendChild(down);
@@ -1357,19 +1643,19 @@ function renderGoalList() {
     const date = document.createElement('span');
     date.className = 'g-date';
     date.textContent = gl.done
-      ? new Date(gl.done + 'T00:00:00').toLocaleDateString('tr-TR') + "'de başarıldı"
-      : new Date(gl.added + 'T00:00:00').toLocaleDateString('tr-TR') + "'de eklendi";
+      ? new Date(gl.done + 'T00:00:00').toLocaleDateString(t('locale')) + t('gl_done')
+      : new Date(gl.added + 'T00:00:00').toLocaleDateString(t('locale')) + t('gl_added');
     row.appendChild(name);
     row.appendChild(date);
 
     const btn = document.createElement('button');
     btn.type = 'button';
     if (gl.done) {
-      btn.textContent = 'Geri al';
+      btn.textContent = t('gl_undo');
       btn.onclick = () => { gl.done = null; save(); render(); };
     } else {
       btn.className = 'achieve';
-      btn.textContent = '✔ Başardım';
+      btn.textContent = t('gl_achieve');
       btn.onclick = () => { gl.done = todayKey(); save(); render(); };
     }
     row.appendChild(btn);
@@ -1378,11 +1664,11 @@ function renderGoalList() {
     const edit = document.createElement('button');
     edit.type = 'button';
     edit.textContent = '✎';
-    edit.title = 'Adı/fiyatı düzenle';
+    edit.title = t('gl_edit_title');
     edit.onclick = () => {
-      const yeniAd = prompt('Hedef adı:', gl.name);
+      const yeniAd = prompt(t('gl_edit_name'), gl.name);
       if (yeniAd === null) return;
-      const yeniFiyat = prompt('Hedef fiyatı:', fmt(gl.amount || 0));
+      const yeniFiyat = prompt(t('gl_edit_price'), fmt(gl.amount || 0));
       if (yeniFiyat === null) return;
       const p = parsePrice(yeniFiyat);
       if (yeniAd.trim()) gl.name = yeniAd.trim();
@@ -1396,9 +1682,9 @@ function renderGoalList() {
     del.type = 'button';
     del.className = 'g-del';
     del.textContent = '🗑️';
-    del.title = 'Hedefi sil';
+    del.title = t('gl_del_title');
     del.onclick = () => {
-      if (!confirm('"' + gl.name + '" silinsin mi?')) return;
+      if (!confirm('"' + gl.name + '" ' + t('gl_del_confirm'))) return;
       A.goals = A.goals.filter(x => x.id !== gl.id);
       save();
       render();
@@ -1472,10 +1758,10 @@ function renderCpTotals() {
   const a = cpAllTime();
   const box = (cls, label, val) => '<div class="ct ' + cls + '"><div class="l">' + label + '</div><div class="v">' + val + '</div></div>';
   el.innerHTML =
-    box('earn', 'Kesimden kasılan', fmt(a.earned) + ' CP') +
-    (a.extra ? box('', 'Ekstra (kesim dışı)', fmt(a.extra) + ' CP') : '') +
-    box('spent', 'Bugüne kadar harcanan', fmt(a.spent) + ' CP') +
-    box('now', 'Güncel CP', a.current != null ? fmt(a.current) + ' CP' : '—');
+    box('earn', t('cpt_earned'), fmt(a.earned) + ' CP') +
+    (a.extra ? box('', t('cpt_extra'), fmt(a.extra) + ' CP') : '') +
+    box('spent', t('cpt_spent'), fmt(a.spent) + ' CP') +
+    box('now', t('cpt_now'), a.current != null ? fmt(a.current) + ' CP' : '—');
 }
 
 function setCpOn(field, value, dKey) {
@@ -1537,7 +1823,7 @@ function togglePinFlag(id) {
 function deleteItem(id) {
   const item = state.items.find(i => i.id === id);
   if (!item) return;
-  if (!confirm('"' + item.name + '" silinsin mi? (Geçmiş kayıtları korunur)')) return;
+  if (!confirm('"' + item.name + '" ' + t('item_del_confirm'))) return;
   state.items = state.items.filter(i => i.id !== id);
   save();
   render();
@@ -1596,28 +1882,28 @@ function renderMini() {
   const host = pipWin ? pipWin.document.getElementById('miniPanel') : document.getElementById('miniPanel');
   if (!host) return;
   const cur = state.currency || 'Gold';
-  const t = todayKey();
-  const rec = A.records[t] || {};
+  const tk = todayKey();
+  const rec = A.records[tk] || {};
   let total = 0;
-  let html = '<div class="m-head"><span><b>' + esc(A.name) + '</b> • bugün</span><span id="mClose" style="cursor:pointer">✕</span></div>';
+  let html = '<div class="m-head"><span><b>' + esc(A.name) + '</b> • ' + t('mini_today') + '</span><span id="mClose" style="cursor:pointer">✕</span></div>';
 
   // CP bloğu — bugünün gün başı / gün sonu ve kasılan
-  const cpRec = A.cp[t] || {};
-  const kasilan = cpGain(t);
+  const cpRec = A.cp[tk] || {};
+  const kasilan = cpGain(tk);
   html += '<div class="m-cp">' +
-    '<div class="m-cprow">⚔️ CP başı <input class="m-cpin" id="mCpStart" inputmode="numeric" value="' + (cpRec.start != null ? cpRec.start : '') + '"></div>' +
-    '<div class="m-cprow">CP sonu <input class="m-cpin" id="mCpEnd" inputmode="numeric" value="' + (cpRec.end != null ? cpRec.end : '') + '"></div>' +
-    '<div class="m-cpkas">Kasılan: <b>' + (kasilan > 0 ? '+' : '') + fmt(kasilan) + ' CP</b></div>' +
+    '<div class="m-cprow">⚔️ ' + t('cp_start') + ' <input class="m-cpin" id="mCpStart" inputmode="numeric" value="' + (cpRec.start != null ? cpRec.start : '') + '"></div>' +
+    '<div class="m-cprow">' + t('cp_end') + ' <input class="m-cpin" id="mCpEnd" inputmode="numeric" value="' + (cpRec.end != null ? cpRec.end : '') + '"></div>' +
+    '<div class="m-cpkas">' + t('mini_kasilan') + ' <b>' + (kasilan > 0 ? '+' : '') + fmt(kasilan) + ' CP</b></div>' +
     '</div>';
   // Panelde göstermek için 📌 işaretli itemler; yoksa CP itemleri; o da yoksa hepsi
   const pinned = state.items.filter(i => i.panel);
   const cpList = state.items.filter(i => i.cp);
   const show = pinned.length ? pinned : (cpList.length ? cpList : state.items);
   if (!show.length) {
-    html += '<div class="m-empty">Ana listeye item ekle, sonra item satırındaki <b>📌 Panel</b> ile buraya ekle.</div>';
+    html += '<div class="m-empty">' + t('mini_empty') + '</div>';
   } else {
     for (const item of show) {
-      const q = getQtyOn(item.id, t);
+      const q = getQtyOn(item.id, tk);
       total += q * item.price;
       html += '<div class="m-row">' +
         '<span class="m-name">' + esc(item.name) + '</span>' +
@@ -1626,7 +1912,7 @@ function renderMini() {
         '<button class="m-btn plus" data-inc="' + item.id + '">+</button>' +
         '</div>';
     }
-    html += '<div class="m-total">Bugün: ' + fmtShort(total) + ' ' + esc(cur) + '</div>';
+    html += '<div class="m-total">' + t('mini_total') + ' ' + fmtShort(total) + ' ' + esc(cur) + '</div>';
   }
   host.innerHTML = html;
   host.querySelectorAll('[data-inc]').forEach(b => b.onclick = () => miniInc(b.dataset.inc, 1));
@@ -1641,7 +1927,7 @@ function renderMini() {
 async function openMiniPanel() {
   const host = document.getElementById('miniPanel');
   if (!('documentPictureInPicture' in window)) {
-    alert('Bu özellik Chrome veya Edge tarayıcısında çalışır (güncel sürüm). Firefox desteklemiyor.\n\nDosyayı Chrome/Edge ile aç, tekrar dene.');
+    alert(t('pip_unsupported'));
     return;
   }
   if (pipWin) { pipWin.focus(); return; }
@@ -1682,7 +1968,7 @@ function render() {
   // Günlük ortalama kazanç (son 30 gün, kazanç girilen günler; farm günleri hariç)
   const avg = avgDailyEarning();
   document.getElementById('statAvg').textContent = avg.rate > 0 ? fmtShort(Math.round(avg.rate)) + ' ' + cur : '—';
-  document.getElementById('avgNote').textContent = avg.days ? avg.days + ' kazanç günü ort.' : 'veri yok';
+  document.getElementById('avgNote').textContent = avg.days ? t('avg_days')(avg.days) : t('avg_none');
 
   // CP özetleri
   const c = calcCpStats();
@@ -1711,19 +1997,16 @@ function render() {
   if (net != null && net < 0 && selGain <= 0) {
     const drop = -net; // düşüşü kapatan minimum
     if (!cpRec.spent) {
-      cpGainEl.innerHTML = '<span style="color:#f5b942">⚠ CP ' + fmt(drop) + ' düştü (gün sonu &lt; gün başı).</span> ' +
-        'CP harcadıysan <b>Harcanan</b> kutusuna yaz: <b style="color:#f5b942">' + fmt(drop) + ' + o gün kastığın CP</b> ' +
-        '(örn. 500 kastıysan ' + fmt(drop + 500) + '). Sadece ' + fmt(drop) + ' yazarsan kasılan 0 kalır.';
+      cpGainEl.innerHTML = t('cpg_warn1').replace(/{d5}/g, fmt(drop + 500)).replace(/{d}/g, fmt(drop));
     } else {
-      cpGainEl.innerHTML = '<span style="color:#f87171">⚠ Kasılan hâlâ 0 (' + fmt(cpRec.spent) + ' harcama sadece ' + fmt(drop) + ' düşüşü karşılıyor).</span> ' +
-        'O gün kastığın CP kadarını <b>' + fmt(drop) + '</b> üstüne ekle — örn. 500 kastıysan Harcanan = <b style="color:#f5b942">' + fmt(drop + 500) + '</b>.';
+      cpGainEl.innerHTML = t('cpg_warn2').replace(/{d5}/g, fmt(drop + 500)).replace(/{d}/g, fmt(drop)).replace(/{s}/g, fmt(cpRec.spent));
     }
   } else {
     let gainTxt = '';
     if (selGain) {
-      gainTxt = (isPast ? 'O gün kasılan: ' : 'Bugün kasılan: ') + (selGain > 0 ? '+' : '') + fmt(selGain) + ' CP';
-      if (cpRec.spent) gainTxt += ' (' + fmt(cpRec.spent) + ' harcandı)';
-      if ((cpRec.mult || 1) > 1) gainTxt += ' • ' + cpRec.mult + 'x event, 1x karşılığı: ' + fmt(Math.round(cpBaseGain(selectedDate)));
+      gainTxt = (isPast ? t('cpg_past') : t('cpg_today')) + (selGain > 0 ? '+' : '') + fmt(selGain) + ' CP';
+      if (cpRec.spent) gainTxt += t('cpg_spent1') + fmt(cpRec.spent) + t('cpg_spent2');
+      if ((cpRec.mult || 1) > 1) gainTxt += ' • ' + cpRec.mult + t('tt_event') + ' ' + fmt(Math.round(cpBaseGain(selectedDate)));
     }
     cpGainEl.textContent = gainTxt;
   }
@@ -1751,14 +2034,14 @@ function render() {
     row.className = 'item';
     row.innerHTML =
       '<div class="move-btns">' +
-        '<button type="button" class="up" title="Yukarı taşı"' + (idx === 0 ? ' disabled' : '') + '>▲</button>' +
-        '<button type="button" class="down" title="Aşağı taşı"' + (idx === state.items.length - 1 ? ' disabled' : '') + '>▼</button>' +
+        '<button type="button" class="up" title="' + t('it_up') + '"' + (idx === 0 ? ' disabled' : '') + '>▲</button>' +
+        '<button type="button" class="down" title="' + t('it_down') + '"' + (idx === state.items.length - 1 ? ' disabled' : '') + '>▼</button>' +
       '</div>' +
       '<div class="info">' +
         '<div class="name">' + esc(item.name) + '</div>' +
-        '<div class="price-line">Birim: <input class="price-edit" type="text" inputmode="numeric" autocomplete="off" value="' + fmt(item.price) + '" title="Birim fiyatı düzenle"> ' + esc(cur) + ' ' +
-        '<span class="cp-badge' + (item.cp ? ' on' : '') + '" title="CP ile elde ediliyorsa işaretle — analize dahil olur">⚔️ CP' + (item.cp ? ' ✓' : '') + '</span> ' +
-        '<span class="pin-badge' + (item.panel ? ' on' : '') + '" title="Oyun panelinde göster">📌 Panel' + (item.panel ? ' ✓' : '') + '</span></div>' +
+        '<div class="price-line">' + t('it_unit') + ' <input class="price-edit" type="text" inputmode="numeric" autocomplete="off" value="' + fmt(item.price) + '" title="' + t('it_unit_edit') + '"> ' + esc(cur) + ' ' +
+        '<span class="cp-badge' + (item.cp ? ' on' : '') + '" title="' + t('it_cp_tip') + '">⚔️ CP' + (item.cp ? ' ✓' : '') + '</span> ' +
+        '<span class="pin-badge' + (item.panel ? ' on' : '') + '" title="' + t('it_panel_tip') + '">📌 Panel' + (item.panel ? ' ✓' : '') + '</span></div>' +
       '</div>' +
       '<div class="qty-controls">' +
         '<button type="button" class="minus">−</button>' +
@@ -1790,9 +2073,9 @@ function render() {
   hist.innerHTML = '';
   const dates = [...new Set([...Object.keys(A.records), ...Object.keys(A.cp)])].sort().reverse();
   if (!dates.length) {
-    hist.innerHTML = '<div class="history-row"><span class="date" style="color:var(--muted)">Henüz kayıt yok</span></div>';
+    hist.innerHTML = '<div class="history-row"><span class="date" style="color:var(--muted)">' + t('hist_none') + '</span></div>';
   }
-  const dayNames = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+  const dayNames = t('days');
   const pageCount = Math.max(1, Math.ceil(dates.length / HIST_PER));
   if (histPage >= pageCount) histPage = pageCount - 1;
   if (histPage < 0) histPage = 0;
@@ -1805,8 +2088,8 @@ function render() {
     const g = cpGain(dateKey);
     const cpBadge = g ? ' <small style="color:var(--red)">' + (g > 0 ? '+' : '') + fmt(g) + ' CP</small>' : '';
     row.innerHTML =
-      '<span class="date">' + d.toLocaleDateString('tr-TR') +
-        '<small>' + dayNames[d.getDay()] + (isToday ? ' • bugün' : '') + (A.farm[dateKey] ? ' • 🌾 farm' : '') + '</small></span>' +
+      '<span class="date">' + d.toLocaleDateString(t('locale')) +
+        '<small>' + dayNames[d.getDay()] + (isToday ? ' • ' + t('day_today') : '') + (A.farm[dateKey] ? ' • 🌾 ' + t('day_farm') : '') + '</small></span>' +
       '<span class="total" title="' + fmt(dayTotal(dateKey)) + '">' + fmtShort(dayTotal(dateKey)) + ' ' + esc(cur) + cpBadge + '</span>';
 
     const detail = document.createElement('div');
@@ -1815,17 +2098,17 @@ function render() {
     if (cpRec2) {
       let cpLine = (cpRec2.start != null ? fmt(cpRec2.start) : '?') + ' → ' +
         (cpRec2.end != null ? fmt(cpRec2.end) : '?');
-      if (cpRec2.spent) cpLine += ', harcanan: ' + fmt(cpRec2.spent);
-      if (g) cpLine += ' | kasılan: ' + (g > 0 ? '+' : '') + fmt(g);
-      if (cpRec2.mult > 1) cpLine += ' | ' + cpRec2.mult + 'x event (1x karşılığı: ' + fmt(Math.round(cpBaseGain(dateKey))) + ')';
+      if (cpRec2.spent) cpLine += t('hist_spent') + fmt(cpRec2.spent);
+      if (g) cpLine += t('hist_grinded') + (g > 0 ? '+' : '') + fmt(g);
+      if (cpRec2.mult > 1) cpLine += ' | ' + cpRec2.mult + t('tt_event2') + ' ' + fmt(Math.round(cpBaseGain(dateKey))) + ')';
       detail.innerHTML += '<div>⚔️ CP: <span>' + cpLine + '</span></div>';
     }
     const rec = A.records[dateKey] || {};
     for (const id in rec) {
       const r = rec[id];
       const item = state.items.find(i => i.id === id);
-      const name = (item && item.name) || r.n || '(silinmiş item)';
-      detail.innerHTML += '<div>' + esc(name) + ': <span>' + fmt(r.q) + ' adet × ' + fmt(r.p) +
+      const name = (item && item.name) || r.n || t('hist_deleted');
+      detail.innerHTML += '<div>' + esc(name) + ': <span>' + fmt(r.q) + t('hist_qty') + fmt(r.p) +
         ' = ' + fmtShort(r.q * r.p) + ' ' + esc(cur) + '</span></div>';
     }
     row.onclick = () => {
@@ -1840,14 +2123,14 @@ function render() {
   pager.innerHTML = '';
   if (dates.length > HIST_PER) {
     const prev = document.createElement('button');
-    prev.textContent = '‹ Önceki'; prev.disabled = histPage === 0;
+    prev.textContent = t('pg_prev'); prev.disabled = histPage === 0;
     prev.onclick = () => { histPage--; render(); };
     const next = document.createElement('button');
-    next.textContent = 'Sonraki ›'; next.disabled = histPage >= pageCount - 1;
+    next.textContent = t('pg_next'); next.disabled = histPage >= pageCount - 1;
     next.onclick = () => { histPage++; render(); };
     const info = document.createElement('span');
     info.className = 'hist-pinfo';
-    info.textContent = 'Sayfa ' + (histPage + 1) + ' / ' + pageCount + ' (' + dates.length + ' gün)';
+    info.textContent = t('pg_page') + ' ' + (histPage + 1) + ' / ' + pageCount + ' (' + dates.length + ' ' + t('pg_days') + ')';
     pager.appendChild(prev); pager.appendChild(info); pager.appendChild(next);
   }
 
@@ -2116,13 +2399,13 @@ function renderLineChart(container, data, key, color, unitLabel, tipFmt) {
   data.forEach((p, i) => {
     const hit = svgEl('rect', { x: f.padL + f.slotW * i, y: f.padT, width: f.slotW, height: f.plotH, fill: 'transparent' });
     hit.addEventListener('pointermove', e => {
-      const rows = [[color, unitLabel, p[key] == null ? 'CP verisi yok' : tipFmt(p[key])]];
+      const rows = [[color, unitLabel, p[key] == null ? t('tip_nocp') : tipFmt(p[key])]];
       // Verim oranının kaynağı: kazanılan değer, nesne adedi, CP
       if (key === 'verim') {
-        rows.push([VIZ.item, 'değer', fmtShort(p.val) + ' ' + (state.currency || 'Gold')]);
-        rows.push([VIZ.item, 'nesne', fmt(p.items) + ' adet']);
-        rows.push([VIZ.cp, 'kasılan CP', fmt(p.cp)]);
-        if (p.base !== p.cp) rows.push([VIZ.cp, '1x karşılığı CP', fmt(Math.round(p.base))]);
+        rows.push([VIZ.item, t('tip_value'), fmtShort(p.val) + ' ' + (state.currency || 'Gold')]);
+        rows.push([VIZ.item, t('tip_item'), fmt(p.items) + t('tip_pcs')]);
+        rows.push([VIZ.cp, t('tip_cp'), fmt(p.cp)]);
+        if (p.base !== p.cp) rows.push([VIZ.cp, t('tip_basecp'), fmt(Math.round(p.base))]);
       }
       showTip(e, p.full, rows);
     });
@@ -2142,7 +2425,7 @@ function renderItemBreakdown() {
     for (const id in A.records[dk]) {
       const r = A.records[dk][id];
       const item = state.items.find(i => i.id === id);
-      const name = (item && item.name) || r.n || '(silinmiş)';
+      const name = (item && item.name) || r.n || t('brk_del2');
       if (!agg[id]) agg[id] = { name, qty: 0, value: 0 };
       agg[id].qty += r.q || 0;
       agg[id].value += (r.q || 0) * (r.p || 0);
@@ -2152,17 +2435,17 @@ function renderItemBreakdown() {
   const grand = rows.reduce((s, x) => s + x.value, 0);
 
   if (!rows.length) {
-    host.innerHTML = '<div class="analysis-hint">Henüz item girişi yok.</div>';
+    host.innerHTML = '<div class="analysis-hint">' + t('brk_none') + '</div>';
     return;
   }
 
-  let html = '<table class="brk"><tr><th>Item</th><th>Toplam adet</th><th>Toplam değer</th><th>Pay</th></tr>';
+  let html = '<table class="brk"><tr><th>' + t('brk_item') + '</th><th>' + t('brk_qty') + '</th><th>' + t('brk_val') + '</th><th>' + t('brk_share') + '</th></tr>';
   for (const x of rows) {
     const pct = grand > 0 ? (x.value / grand * 100) : 0;
     html += '<tr><td>' + esc(x.name) + '</td><td>' + fmt(x.qty) + '</td><td>' + fmtShort(x.value) + ' ' + esc(cur) +
       '</td><td><span class="brk-bar"><span style="width:' + pct.toFixed(1) + '%"></span></span>%' + pct.toFixed(0) + '</td></tr>';
   }
-  html += '<tr class="brk-total"><td>TOPLAM</td><td></td><td>' + fmtShort(grand) + ' ' + esc(cur) + '</td><td></td></tr>';
+  html += '<tr class="brk-total"><td>' + t('brk_total') + '</td><td></td><td>' + fmtShort(grand) + ' ' + esc(cur) + '</td><td></td></tr>';
   html += '</table>';
 
   // Kasa karşılaştırması
@@ -2174,16 +2457,14 @@ function renderItemBreakdown() {
     const accounted = holdings + spentGoals; // hesaba katılan toplam (nakit+mal+alınan hedefler)
     const diff = grand - accounted;
     html += '<div class="brk-cmp">' +
-      '<div>Bugüne kadar düşen toplam: <b>' + fmtShort(grand) + ' ' + esc(cur) + '</b></div>' +
-      '<div>Şu anki kasa + satılmamış: <b>' + fmtShort(holdings) + ' ' + esc(cur) + '</b> ' +
-      '<small>(' + fmtShort(v.amount || 0) + ' kasa + ' + fmtShort(v.stock || 0) + ' satılmamış)</small></div>' +
-      (spentGoals ? '<div>Başarılan hedeflere harcanan: <b>' + fmtShort(spentGoals) + ' ' + esc(cur) + '</b> ' +
-        '<small>(alınan SET/pelerin vb. — varlık olarak duruyor)</small></div>' : '') +
-      '<div>Fark (düşen − hesaba katılan): <b style="color:' + (diff >= 0 ? 'var(--red)' : 'var(--green)') + '">' + fmtShort(Math.abs(diff)) + ' ' + esc(cur) + '</b> ' +
-      '<small>' + (diff >= 0 ? 'diğer harcama / kayıt dışı' : 'kasada fazladan var') + '</small></div>' +
+      '<div>' + t('brk_dropped') + ' <b>' + fmtShort(grand) + ' ' + esc(cur) + '</b></div>' +
+      '<div>' + t('brk_holdings') + ' <b>' + fmtShort(holdings) + ' ' + esc(cur) + '</b></div>' +
+      (spentGoals ? '<div>' + t('brk_spentgoals') + ' <b>' + fmtShort(spentGoals) + ' ' + esc(cur) + '</b></div>' : '') +
+      '<div>' + t('brk_diff') + ' <b style="color:' + (diff >= 0 ? 'var(--red)' : 'var(--green)') + '">' + fmtShort(Math.abs(diff)) + ' ' + esc(cur) + '</b> ' +
+      '<small>' + (diff >= 0 ? t('brk_diff_spent') : t('brk_diff_extra')) + '</small></div>' +
       '</div>';
   } else {
-    html += '<div class="brk-cmp"><small>Kasa değeri girersen (Hedef panelinde) buradan kasayla karşılaştırma yapılır.</small></div>';
+    html += '<div class="brk-cmp"><small>' + t('brk_novault') + '</small></div>';
   }
   host.innerHTML = html;
 }
@@ -2193,7 +2474,7 @@ function renderAnalysis() {
   body.innerHTML = '';
   document.getElementById('segDaily').classList.toggle('active', analysisMode === 'daily');
   document.getElementById('segWeekly').classList.toggle('active', analysisMode === 'weekly');
-  document.getElementById('rangeNote').textContent = analysisMode === 'daily' ? 'Son 14 gün' : 'Son 8 hafta';
+  document.getElementById('rangeNote').textContent = analysisMode === 'daily' ? t('an_last14b') : t('an_last8b');
 
   const hasCpItems = state.items.some(i => i.cp);
   const data = buildSeries(analysisMode);
@@ -2205,7 +2486,7 @@ function renderAnalysis() {
   if (!hasCpItems && totItems === 0) {
     const hint = document.createElement('div');
     hint.className = 'analysis-hint';
-    hint.innerHTML = 'Analiz için önce CP ile elde edilen nesneleri işaretle:<br>item satırındaki <b style="color:var(--blue)">⚔️ CP</b> rozetine tıklaman yeterli.';
+    hint.textContent = t('an_hint_mark');
     body.appendChild(hint);
     return;
   }
@@ -2214,14 +2495,14 @@ function renderAnalysis() {
   const cur = state.currency || 'Gold';
   const avgVerim = totBase > 0 ? totVal / totBase * 1000 : null;
   const best = data.reduce((b, p) => (p.verim != null && (b == null || p.verim > b.verim)) ? p : b, null);
-  const periodWord = analysisMode === 'daily' ? 'gün' : 'hafta';
+  const periodWord = analysisMode === 'daily' ? t('period_day') : t('period_week');
   const tiles = document.createElement('div');
   tiles.className = 'tiles';
   const tileData = [
-    ['Ortalama verim', avgVerim == null ? '—' : fmtShort(avgVerim), cur + ' / 1.000 CP (1x bazı)'],
-    ['En verimli ' + periodWord, best && best.verim ? best.full.split(' – ')[0] : '—', best && best.verim ? fmtShort(best.verim) + ' ' + cur + ' / 1.000 CP' : 'henüz veri yok'],
-    ['Kasılan CP', fmtShort(totCp), analysisMode === 'daily' ? 'son 14 gün' : 'son 8 hafta'],
-    ['CP ile gelen değer', fmtShort(totVal) + ' ' + cur, fmt(totItems) + ' adet nesne']
+    [t('an_avg'), avgVerim == null ? '—' : fmtShort(avgVerim), cur + ' / 1.000 CP'],
+    [analysisMode === 'daily' ? t('an_best_day') : t('an_best_week'), best && best.verim ? best.full.split(' – ')[0] : '—', best && best.verim ? fmtShort(best.verim) + ' ' + cur + t('an_perk') : t('an_none')],
+    [t('an_cp'), fmtShort(totCp), analysisMode === 'daily' ? t('an_last14') : t('an_last8')],
+    [t('an_val'), fmtShort(totVal) + ' ' + cur, fmt(totItems) + ' ' + t('an_items_note')]
   ];
   for (const [label, value, note] of tileData) {
     const t = document.createElement('div');
@@ -2236,9 +2517,9 @@ function renderAnalysis() {
 
   // Grafikler — tek eksen kuralı: her ölçü kendi kartında (small multiples)
   const charts = [
-    ['Verim — 1.000 CP başına değer (' + cur + ')', 'verim', VIZ.verim, 'line', v => fmtShort(v) + ' ' + cur + '/1k CP'],
-    ['Kasılan CP', 'cp', VIZ.cp, 'bar', v => fmt(v) + ' CP'],
-    ['CP ile gelen değer (' + cur + ')', 'val', VIZ.item, 'bar', v => fmtShort(v) + ' ' + cur]
+    [t('ch_eff') + ' (' + cur + ')', 'verim', VIZ.verim, 'line', v => fmtShort(v) + ' ' + cur + '/1k CP'],
+    [t('ch_cp'), 'cp', VIZ.cp, 'bar', v => fmt(v) + ' CP'],
+    [t('ch_val') + ' (' + cur + ')', 'val', VIZ.item, 'bar', v => fmtShort(v) + ' ' + cur]
   ];
   for (const [title, key, color, type, tf] of charts) {
     const card = document.createElement('div');
@@ -2255,10 +2536,10 @@ function renderAnalysis() {
   // Tablo görünümü (erişilebilirlik: her değer hover olmadan da okunabilir)
   const det = document.createElement('details');
   const sum = document.createElement('summary');
-  sum.textContent = 'Tablo görünümü';
+  sum.textContent = t('tblview');
   det.appendChild(sum);
   const table = document.createElement('table');
-  table.innerHTML = '<tr><th>' + (analysisMode === 'daily' ? 'Gün' : 'Hafta') + '</th><th>Kasılan CP</th><th>1x Bazı</th><th>Nesne</th><th>Değer</th><th>Verim (' + cur + '/1k CP)</th></tr>';
+  table.innerHTML = '<tr><th>' + (analysisMode === 'daily' ? t('tbl_day') : t('tbl_week')) + '</th><th>' + t('tbl_cp') + '</th><th>' + t('tbl_base') + '</th><th>' + t('tbl_item') + '</th><th>' + t('tbl_value') + '</th><th>' + t('tbl_eff') + ' (' + cur + t('an_perk') + ')</th></tr>';
   for (const p of data) {
     const tr = document.createElement('tr');
     for (const val of [p.full, fmt(p.cp), fmt(Math.round(p.base)), fmt(p.items), fmtShort(p.val), p.verim == null ? '—' : fmtShort(p.verim)]) {
@@ -2305,7 +2586,7 @@ document.getElementById('goalSave').onclick = () => {
     amount = act.amount; // tutar listedeki aktif hedeften gelir, burada sadece sapma kaydedilir
   } else {
     amount = parsePrice(goalAmountEl.value);
-    if (isNaN(amount) || amount <= 0) return alert('Geçerli bir hedef tutar gir');
+    if (isNaN(amount) || amount <= 0) return alert(t('goal_invalid'));
   }
   A.goal = { amount, dev };
   save();
@@ -2348,7 +2629,7 @@ for (const el of [vaultAmountEl, vaultStockEl]) {
 }
 
 document.getElementById('goalClear').onclick = () => {
-  if (!confirm('Hedef kaldırılsın mı? (Kazanç verilerine dokunulmaz)')) return;
+  if (!confirm(t('goal_rm_confirm'))) return;
   A.goal = null;
   save();
   render();
@@ -2413,13 +2694,10 @@ function checkUpdate() {
 }
 document.getElementById('updateClose').onclick = () => { document.getElementById('updateBar').style.display = 'none'; };
 
-// Dil değiştir
-document.getElementById('langBtn').onclick = () => {
-  LANG = LANG === 'tr' ? 'en' : 'tr';
-  localStorage.setItem('lang', LANG);
-  applyLang();
-  if (appStarted) render(); // dinamik metinler de güncellensin
-};
+// Dil değiştir (hem uygulama içi hem kilit ekranı butonu)
+document.getElementById('langBtn').onclick = toggleLang;
+const _langBtnLock = document.getElementById('langBtnLock');
+if (_langBtnLock) _langBtnLock.onclick = toggleLang;
 
 document.getElementById('welcomeClose').onclick = () => {
   welcome.style.display = 'none';
@@ -2464,6 +2742,32 @@ curInput.onchange = () => {
   render();
 };
 
+// Lisans yenileme / süre uzatma (uygulama içinden)
+const _licRenewBtn = document.getElementById('licRenewBtn');
+if (_licRenewBtn) _licRenewBtn.onclick = async () => {
+  const msg = document.getElementById('licRenewMsg');
+  const inp = document.getElementById('licNewKey');
+  const v = (inp.value || '').trim();
+  msg.style.color = 'var(--red)';
+  if (!v) { msg.textContent = t('lic_needkey'); return; }
+  _licRenewBtn.disabled = true;
+  try {
+    const res = await verifyLicense(v);
+    if (!res.ok) { msg.textContent = reasonText(res.reason); return; }
+    const srv = await serverActivate(v);
+    if (!srv.ok) { // ağ hatasıysa net mesajı, sunucu bir sebep dediyse onu göster
+      msg.textContent = (srv.net === false) ? t('lic_r_net') : reasonText(srv.reason);
+      return;
+    }
+    localStorage.setItem(LIC_KEY, v);
+    localStorage.setItem(ACT_KEY, '1');
+    inp.value = '';
+    msg.style.color = 'var(--accent)';
+    msg.textContent = t('lic_renew_ok');
+    renderLicense(res);
+  } finally { _licRenewBtn.disabled = false; }
+};
+
 // Yedekleme
 document.getElementById('exportBtn').onclick = () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -2482,17 +2786,20 @@ document.getElementById('importFile').onchange = e => {
   reader.onload = () => {
     try {
       const data = JSON.parse(reader.result);
-      if (!data || !Array.isArray(data.items) || typeof data.records !== 'object') {
-        return alert('Geçersiz yedek dosyası');
+      // Geçerli yedek: item kataloğu (dizi) + ya çok-karakter yapısı (chars) ya da eski v1 (records)
+      const gecerli = data && typeof data === 'object' && Array.isArray(data.items) &&
+        (typeof data.chars === 'object' || typeof data.records === 'object');
+      if (!gecerli) {
+        return alert(t('bk_invalid'));
       }
-      if (!confirm('Yedek yüklenecek, mevcut veriler yedekteki verilerle DEĞİŞTİRİLECEK. Devam?')) return;
+      if (!confirm(t('bk_confirm'))) return;
       useState(data);
       save();
       selectedDate = todayKey();
       render();
-      alert('Yedek yüklendi ✓');
+      alert(t('bk_ok'));
     } catch (err) {
-      alert('Dosya okunamadı: ' + err.message);
+      alert(t('bk_err') + err.message);
     }
   };
   reader.readAsText(file);
@@ -2522,7 +2829,7 @@ gcAmountEl.addEventListener('input', () => {
 gcPriceEl.addEventListener('input', calcGc);
 
 document.getElementById('resetBtn').onclick = () => {
-  if (confirm('TÜM karakterler, itemler ve geçmiş silinecek. Emin misin?')) {
+  if (confirm(t('reset_confirm'))) {
     const id = 'c' + Date.now().toString(36);
     useState({ items: [], currency: state.currency, activeChar: id, chars: { [id]: blankChar('Karakter 1') } });
     selectedDate = todayKey();
@@ -2553,7 +2860,7 @@ const lockHint = document.getElementById('lockHint');
 
 lockPass2.style.display = 'none';
 lockPass.type = 'text';
-lockPass.placeholder = 'Lisans anahtarını buraya yapıştır';
+lockPass.placeholder = t('lic_ph');
 
 let appStarted = false;
 // --- Karakter yönetimi ---
@@ -2581,14 +2888,14 @@ function switchChar(id) {
 
 document.getElementById('charSel').onchange = e => switchChar(e.target.value);
 document.getElementById('charAdd').onclick = () => {
-  const name = prompt('Yeni karakterin adı:');
+  const name = prompt(t('char_prompt_new'));
   if (!name || !name.trim()) return;
   const id = 'c' + Date.now().toString(36);
   state.chars[id] = blankChar(name.trim());
   switchChar(id);
 };
 document.getElementById('charRename').onclick = () => {
-  const name = prompt('Karakter adı:', A.name);
+  const name = prompt(t('char_prompt_rename'), A.name);
   if (!name || !name.trim()) return;
   A.name = name.trim();
   save();
@@ -2596,7 +2903,7 @@ document.getElementById('charRename').onclick = () => {
 };
 document.getElementById('charDel').onclick = () => {
   if (Object.keys(state.chars).length <= 1) return alert('Son karakter silinemez.');
-  if (!confirm('"' + A.name + '" karakteri ve tüm verileri silinsin mi?')) return;
+  if (!confirm('"' + A.name + '" ' + t('char_del_confirm'))) return;
   delete state.chars[state.activeChar];
   const first = Object.keys(state.chars)[0];
   switchChar(first);
@@ -2610,44 +2917,102 @@ function startApp(info) {
   document.querySelector('.container').style.display = '';
   applyLang();
   const vi = document.getElementById('verInfo');
-  if (vi) vi.textContent = 'Sürüm ' + APP_VERSION;
+  if (vi) vi.textContent = t('version') + APP_VERSION;
   checkUpdate();
-  // kalan süreyi başlıkta göster
-  if (info && info.exp) {
-    const lbl = document.getElementById('todayLabel');
-    if (lbl) {
-      if (info.exp >= '9999-01-01') {
-        lbl.textContent = 'Lisans: ♾️ süresiz' + (info.ad ? ' — ' + info.ad : '');
-      } else {
-        const kalan = Math.ceil((new Date(info.exp + 'T23:59:59') - new Date()) / 86400000);
-        lbl.textContent = 'Lisans bitiş: ' + new Date(info.exp + 'T00:00:00').toLocaleDateString('tr-TR') + ' (' + kalan + ' gün)';
-      }
-    }
-  }
+  renderLicense(info); // başlık + uyarı bandı + lisans paneli
   autoFillCpStart();
   render();
 }
 
-const REASONS = {
-  format: 'Anahtar geçersiz (format hatalı). Doğru kopyaladığından emin ol.',
-  imza: 'Anahtar geçersiz. Bu uygulamaya ait bir lisans değil.',
-  süre: 'Lisans süresi doldu. Yeni bir anahtar iste.',
-  saat: 'Sistem saati geri alınmış görünüyor. Tarihi düzeltip tekrar dene.'
+// Kayıtlı anahtardan (offline) exp/ad çıkar
+function licInfoFromStore() {
+  const saved = localStorage.getItem(LIC_KEY);
+  if (!saved) return null;
+  try {
+    const [pB] = saved.trim().split('.');
+    const payload = JSON.parse(new TextDecoder().decode(unb64u(pB)));
+    return { exp: payload.exp, ad: payload.ad || '' };
+  } catch (e) { return null; }
+}
+
+// Lisans durumunu üç yerde de gösterir: başlık etiketi, uyarı bandı, Lisans paneli
+function renderLicense(info) {
+  if (!info) info = licInfoFromStore();
+  const en = LANG === 'en';
+  const lbl = document.getElementById('todayLabel');
+  const licBar = document.getElementById('licBar');
+  const licStatus = document.getElementById('licStatus');
+  if (licBar) licBar.style.display = 'none';
+  if (!info || !info.exp) { if (licStatus) licStatus.textContent = '—'; return; }
+
+  if (info.exp >= '9999-01-01') { // süresiz
+    if (lbl) lbl.textContent = (en ? 'License: ♾️ lifetime' : 'Lisans: ♾️ süresiz') + (info.ad ? ' — ' + info.ad : '');
+    if (licStatus) licStatus.innerHTML = (en ? '♾️ <b>Lifetime license</b>' : '♾️ <b>Süresiz lisans</b>') + (info.ad ? ' — ' + esc(info.ad) : '');
+    return;
+  }
+  const kalan = Math.ceil((new Date(info.exp + 'T23:59:59') - new Date()) / 86400000);
+  const bitisTxt = new Date(info.exp + 'T00:00:00').toLocaleDateString(en ? 'en-GB' : 'tr-TR');
+  if (lbl) lbl.textContent = (en ? 'License ends: ' : 'Lisans bitiş: ') + bitisTxt + ' (' + kalan + (en ? ' days)' : ' gün)');
+  if (licStatus) {
+    const kalanTxt = kalan <= 0 ? (en ? 'expired' : 'süresi doldu') : (kalan + (en ? ' days left' : ' gün kaldı'));
+    const renk = kalan <= 3 ? 'var(--red)' : (kalan <= 10 ? '#f5b942' : 'var(--accent)');
+    licStatus.innerHTML = (en ? 'Ends: ' : 'Bitiş: ') + '<b>' + bitisTxt + '</b> • <b style="color:' + renk + '">' + kalanTxt + '</b>' + (info.ad ? ' — ' + esc(info.ad) : '');
+  }
+  if (licBar && kalan <= 10) { // son 10 gün: belirgin bant
+    const gunTxt = kalan <= 0
+      ? (en ? 'Your license has expired!' : 'Lisansın doldu!')
+      : (en ? 'Your license ends in ' + kalan + ' day(s).' : 'Lisansın ' + kalan + ' gün sonra bitiyor.');
+    licBar.className = 'lic-bar ' + (kalan <= 3 ? 'danger' : 'warn');
+    const contactTxt = (CONTACT && (CONTACT[LANG] || CONTACT.tr)) || '';
+    licBar.innerHTML = (kalan <= 3 ? '🔴 ' : '⏳ ') + gunTxt + (contactTxt ? ' <span class="lic-sub">' + contactTxt + '</span>' : '');
+    licBar.style.display = 'flex';
+  }
+}
+
+const REASON_KEYS = {
+  format: 'lic_r_format', imza: 'lic_r_imza', 'süre': 'lic_r_sure', saat: 'lic_r_saat',
+  'cihaz-limiti': 'lic_r_devlimit', 'cihaz-kayıtsız': 'lic_r_devunreg'
 };
+function reasonText(reason) { return REASON_KEYS[reason] ? t(REASON_KEYS[reason]) : t('lic_badkey'); }
 
 async function tryKey(lic, fromStore) {
+  // 1) Offline: imza + süre + saat kontrolü
   const res = await verifyLicense(lic);
-  if (res.ok) {
+  if (!res.ok) {
+    lockErr.textContent = reasonText(res.reason);
+    if (res.reason === 'süre') localStorage.removeItem(LIC_KEY);
+    return false;
+  }
+  // 2) Sunucu: cihaz kilidi
+  const srv = await serverActivate(lic);
+  const activatedBefore = localStorage.getItem(ACT_KEY) === '1' && localStorage.getItem(LIC_KEY) === lic.trim();
+
+  if (srv.ok) {
     localStorage.setItem(LIC_KEY, lic.trim());
+    localStorage.setItem(ACT_KEY, '1');
+    lockErr.textContent = '';
     startApp(res);
     return true;
   }
-  if (!fromStore) lockErr.textContent = REASONS[res.reason] || 'Anahtar doğrulanamadı.';
-  if (res.reason === 'süre') { localStorage.removeItem(LIC_KEY); lockErr.textContent = REASONS.süre; }
+  // Kesin cihaz/süre reddi → kilidi uygula, anahtarı temizle
+  if (srv.reason === 'cihaz-limiti' || srv.reason === 'cihaz-kayıtsız' || srv.reason === 'süre') {
+    localStorage.removeItem(LIC_KEY);
+    localStorage.removeItem(ACT_KEY);
+    lockErr.textContent = reasonText(srv.reason);
+    return false;
+  }
+  // Daha önce aktive edildiyse (ağ hatası / geçici sunucu sorunu) → çevrimdışı çalışmasına izin ver
+  if (activatedBefore) {
+    lockErr.textContent = '';
+    startApp(res);
+    return true;
+  }
+  // İlk aktivasyon: ağ hatasıysa net mesajı, sunucu bir sebep dediyse (format/imza…) onu göster
+  lockErr.textContent = (srv.net === false) ? t('lic_r_net') : reasonText(srv.reason);
   return false;
 }
 
-lockBtn.onclick = () => { lockErr.textContent = ''; const v = lockPass.value.trim(); if (!v) { lockErr.textContent = 'Lisans anahtarı gir.'; return; } tryKey(v, false); };
+lockBtn.onclick = () => { lockErr.textContent = ''; const v = lockPass.value.trim(); if (!v) { lockErr.textContent = t('lic_needkey'); return; } tryKey(v, false); };
 lockPass.addEventListener('keydown', e => { if (e.key === 'Enter') lockBtn.click(); });
 
 (async function boot() {
@@ -2657,13 +3022,9 @@ lockPass.addEventListener('keydown', e => { if (e.key === 'Enter') lockBtn.click
   lockHint.textContent = t('lic_hint');
   const saved = localStorage.getItem(LIC_KEY);
   if (saved) {
-    // kayıtlı lisansla sessizce dene; geçersiz/dolmuşsa giriş ekranı kalsın
+    // kayıtlı lisansla sessizce dene; geçersiz/dolmuş/cihaz reddiyse giriş ekranı kalsın (hata mesajı tryKey içinde ayarlanır)
     const ok = await tryKey(saved, true);
-    if (!ok) {
-      const res = await verifyLicense(saved);
-      lockErr.textContent = res.reason === 'süre' ? REASONS.süre : (REASONS[res.reason] || '');
-      lockPass.focus();
-    }
+    if (!ok) lockPass.focus();
   } else {
     lockPass.focus();
   }
